@@ -1233,7 +1233,7 @@ NMI_int_server
 ; ----------------------------------
   CNOP 0,4
 pf1_color_table
-  INCLUDE "Daten:Asm-Sources.AGA/No!Bitplanes/colortables/vcs3111_color-gradient.ct"
+  INCLUDE "Daten:Asm-Sources.AGA/NoBitplanes/colortables/vcs3111_color-gradient.ct"
 
 ; ** Adressen der Sprites **
 ; --------------------------
@@ -1372,12 +1372,12 @@ prg_version DC.B "$VER: no-bitplanes 1.0 beta (7.2.24)",TRUE
 ; **** PT-Replay ****
   IFEQ pt_split_module
 pt_auddata SECTION pt_audio,DATA
-    INCBIN "Daten:Asm-Sources.AGA/No!Bitplanes/modules/MOD.end_of_2021.song"
+    INCBIN "Daten:Asm-Sources.AGA/NoBitplanes/modules/MOD.end_of_2021.song"
 pt_audsmps SECTION pt_audio2,DATA_C
-    INCBIN "Daten:Asm-Sources.AGA/No!Bitplanes/modules/MOD.end_of_2021.smps"
+    INCBIN "Daten:Asm-Sources.AGA/NoBitplanes/modules/MOD.end_of_2021.smps"
   ELSE
 pt_auddata SECTION pt_audio,DATA_C
-    INCBIN "Daten:Asm-Sources.AGA/No!Bitplanes/modules/mod.end_of_2021"
+    INCBIN "Daten:Asm-Sources.AGA/NoBitplanes/modules/mod.end_of_2021"
   ENDC
 
 
@@ -1386,11 +1386,11 @@ pt_auddata SECTION pt_audio,DATA_C
 
 ; **** Logo ****
 lg_image_data SECTION lg_gfx,DATA
-  INCBIN "Daten:Asm-Sources.AGA/No!Bitplanes/graphics/32x256x16-Resistance.rawblit"
+  INCBIN "Daten:Asm-Sources.AGA/NoBitplanes/graphics/32x256x16-Resistance.rawblit"
 
 ; **** Vertical-Scrolltext ****
 vst_image_data SECTION vst_gfx,DATA_C
-  INCBIN "Daten:Asm-Sources.AGA/No!Bitplanes/fonts/16x15x2-Font.rawblit"
+  INCBIN "Daten:Asm-Sources.AGA/NoBitplanes/fonts/16x15x2-Font.rawblit"
   DS.B vst_image_plane_width*vst_image_depth ;Leerzeile
 
   END

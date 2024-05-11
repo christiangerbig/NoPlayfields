@@ -615,12 +615,12 @@ prg_version DC.B "$VER: no-bitplanes 1.0 beta (7.2.24)",TRUE
 ; **** PT-Replay ****
   IFEQ pt_split_module
 pt_auddata SECTION audio,DATA
-    INCBIN "Daten:Asm-Sources.AGA/No!Bitplanes/modules/MOD.end_of_2021.song"
+    INCBIN "Daten:Asm-Sources.AGA/NoBitplanes/modules/MOD.end_of_2021.song"
 pt_audsmps SECTION audio2,DATA_C
-    INCBIN "Daten:Asm-Sources.AGA/No!Bitplanes/modules/MOD.end_of_2021.smps"
+    INCBIN "Daten:Asm-Sources.AGA/NoBitplanes/modules/MOD.end_of_2021.smps"
   ELSE
 pt_auddata SECTION audio,DATA_C
-    INCBIN "Daten:Asm-Sources.AGA/No!Bitplanes/modules/mod.end_of_2021"
+    INCBIN "Daten:Asm-Sources.AGA/NoBitplanes/modules/mod.end_of_2021"
   ENDC
 
   END
