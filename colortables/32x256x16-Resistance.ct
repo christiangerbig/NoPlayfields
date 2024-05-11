@@ -1,0 +1,5 @@
+
+		dc.l	COLOR00BITS,$000d496a,$00155375,$001c5d7f
+		dc.l	$0024668a,$002b7094,$00327a9e,$003a83a9
+		dc.l	$00418db3,$004896bd,$005fa4c7,$0076b2d1
+		dc.l	$008cbfdb,$00a3cde5,$00badbef,$00d0e8f8
