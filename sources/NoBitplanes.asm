@@ -1,5 +1,5 @@
 ; ##############################
-; # Programm: NoBitplanes.asm #
+; # Programm: NoBitplanes.asm  #
 ; # Autor:    Christian Gerbig #
 ; # Datum:    23.04.2024       #
 ; # Version:  1.0 Beta         #
@@ -305,6 +305,9 @@ vst_object_x_size               EQU 32
 vst_object_width                EQU vst_object_x_size/8
 vst_object_y_size               EQU visible_lines_number+(vst_text_character_y_size*2)
 vst_object_depth                EQU 2
+
+vst_copy_blit_x_size            EQU vst_text_character_x_size
+vst_copy_blit_y_size            EQU vst_text_character_y_size*vst_text_character_depth
 
 ; **** Blind-Fader ****
 bf_lamella_height               EQU 16
@@ -1144,14 +1147,14 @@ vert_scrolltext
   movem.l a4-a5,-(a7)
   move.l  spr_pointers_construction+(2*LONGWORDSIZE)(pc),d3 ;Sprite2-Struktur
   ADDF.L  (spr_pixel_per_datafetch/4),d3 ;Sprite-Header überspringen
-  move.w  #(vst_text_character_y_size*vst_text_character_depth*64)+(vst_text_character_x_size/16),d4 ;BLTSIZE
+  move.w  #(vst_copy_blit_y_size*64)+(vst_copy_blit_x_size/16),d4 ;BLTSIZE
   MOVEF.W vst_text_character_y_restart,d5
   lea     vst_characters_y_positions(pc),a0 ;Y-Positionen der Chars
   lea     vst_characters_image_pointers(pc),a1 ;Zeiger auf Adressen der Char-Images
   lea     BLTAPT-DMACONR(a6),a2    ;Offset der Blitterregister auf Null setzen
   lea     BLTDPT-DMACONR(a6),a4
   lea     BLTSIZE-DMACONR(a6),a5
-  bsr.s   vst_init_character_blit
+  bsr.s   vst_init_copy_blit
   moveq   #vst_text_characters_number-1,d7 ;Anzahl der Chars
 vert_scrolltext_loop
   moveq   #TRUE,d0           ;32-Bit-Zugriff
@@ -1178,11 +1181,8 @@ vst_set_character_y_position
   movem.l (a7)+,a4-a5
 vst_no_vert_scrolltext
   rts
-
-; ** konstante Blitterregister initialisieren **
-; ----------------------------------------------
   CNOP 0,4
-vst_init_character_blit
+vst_init_copy_blit
   move.w  #DMAF_BLITHOG+DMAF_SETCLR,DMACON-DMACONR(a6) ;BLTPRI an
   WAITBLITTER
   move.l  #(BC0F_SRCA+BC0F_DEST+ANBNC+ANBC+ABNC+ABC)<<16,BLTCON0-DMACONR(a6) ;Minterm D=A
@@ -1193,7 +1193,7 @@ vst_init_character_blit
 
 ; ** Neues Image für Character ermitteln **
 ; -----------------------------------------
-  GET_NEW_CHARACTER_IMAGE vst
+  GET_NEW_CHARACTER_IMAGE.W vst
 
 
   IFEQ open_border
@@ -1372,7 +1372,7 @@ VERTB_int_server
 ; ** PT-replay routine **
 ; -----------------------
   IFD pt_v2.3a
-    PT2_REPLAY
+    PT2_REPLAY pt_trigger_fx
   ENDC
   IFD pt_v3.0b
     PT3_REPLAY pt_trigger_fx
@@ -1484,7 +1484,7 @@ sine_table
 ; -------------------------
   INCLUDE "music-tracker/pt-sample-starts-table.i"
 
-; ** Pionters to priod tables for different tuning **
+; ** Pointers to priod tables for different tuning **
 ; ---------------------------------------------------
   INCLUDE "music-tracker/pt-finetune-starts-table.i"
 
