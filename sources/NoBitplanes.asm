@@ -1,8 +1,8 @@
 ; ##############################
 ; # Programm: NoBitplanes.asm  #
 ; # Autor:    Christian Gerbig #
-; # Datum:    23.04.2024       #
-; # Version:  1.0 Beta         #
+; # Datum:    02.06.2024       #
+; # Version:  1.1 Beta         #
 ; # CPU:      68020+           #
 ; # FASTMEM:  -                #
 ; # Chipset:  AGA              #
@@ -1595,7 +1595,7 @@ vst_text
 
 ; ** Programmversion für Version-Befehl **
 ; ----------------------------------------
-prg_version DC.B "$VER: RSE-NoBitplanes 1.0 beta (23.4.24)",TRUE
+prg_version DC.B "$VER: RSE-NoBitplanes 1.1 beta (2.6.24)",TRUE
   EVEN
 
 
