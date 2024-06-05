@@ -1066,7 +1066,7 @@ vert_colorscroll3111
   moveq   #vm_source_channel1,d1
   MULUF.W vm_audchaninfo_SIZE/2,d1,d0
   move.w  vcs3111_switch_table_start(a3),d2 ;Startwert in Farbtabelle holen
-  move.w  d2,d0              ;retten
+  move.w  d2,d0              
   move.w  vcs3111_step2_angle(a3),d4 ;Y-Step-Winkel holen
   IFEQ vcs3111_switch_table_length_256
     add.b (vm_audio_channel1_info+vm_aci_speed+1,pc,d1.w*2),d0 ;Startwert der Switchtabelle erhöhen
@@ -1075,15 +1075,15 @@ vert_colorscroll3111
     add.w   (vm_audio_channel1_info+vm_aci_speed,pc,d1.w*2),d0 ;Startwert der Switchtabelle erhöhen
     and.w   d3,d0            ;Überlauf entfernen
   ENDC
-  move.w  d0,vcs3111_switch_table_start(a3) ;retten
-  move.w  d4,d0              ;retten
+  move.w  d0,vcs3111_switch_table_start(a3) 
+  move.w  d4,d0              
   moveq   #vm_source_channel2,d1
   MULUF.W vm_audchaninfo_SIZE/2,d1,d6
   add.b   (vm_audio_channel1_info+vm_aci_step2anglespeed+1,pc,d1.w*2),d0 ;nächster Y-Winkel
-  move.w  d0,vcs3111_step2_angle(a3) ;retten
+  move.w  d0,vcs3111_step2_angle(a3) 
   MOVEF.L (cl2_extension1_SIZE*(cl2_display_y_size/2))+4,d5
   move.l  extra_memory(a3),a0 ;Tabelle mit Switchwerten
-  move.l  cl2_construction2(a3),a1 ;CL
+  move.l  cl2_construction2(a3),a1 
   ADDF.W  cl2_extension1_entry+cl2_ext1_BPLCON4_1+2+(((cl2_display_width/2)-1)*LONGWORDSIZE)+(((cl2_display_y_size/2)-1)*cl2_extension1_size),a1 ;Start in CL 2. Quadrant
   lea     LONGWORDSIZE(a1),a2 ;Start in CL 1. Quadrant
   lea     sine_table(pc),a3  
@@ -1205,14 +1205,14 @@ blind_fader_in
     bne.s   no_blind_fader_in ;Nein -> verzweige
     move.l  a4,-(a7)
     move.w  bf_registers_table_start(a3),d2 ;Registeradresse holen
-    move.w  d2,d0            ;retten
+    move.w  d2,d0            
     addq.w  #bf_speed,d0     ;Startwert der Tabelle erhöhen
     cmp.w   #bf_registers_table_length/2,d0 ;Ende der Tabelle erreicht ?
     ble.s   bf_no_restart_registers_table ;Nein -> verzweige
     moveq   #FALSE,d1
     move.w  d1,bfi_state(a3) ;Blind-Fader-In aus
 bf_no_restart_registers_table
-    move.w  d0,bf_registers_table_start(a3) ;retten
+    move.w  d0,bf_registers_table_start(a3) 
     MOVEF.W bf_registers_table_length,d3
     MOVEF.W cl2_extension1_SIZE,d4
     moveq   #bf_step2,d5
@@ -1267,13 +1267,13 @@ blind_fader_out
     bne.s   no_blind_fader_out ;Nein -> verzweige
     move.l  a4,-(a7)
     move.w  bf_registers_table_start(a3),d2 ;Startwert der Tabelle holen
-    move.w  d2,d0            ;retten
+    move.w  d2,d0            
     subq.w  #bf_speed,d0     ;Startwert der Tabelle verringern
     bpl.s   bfo_no_restart_registers_table ;Wenn positiv -> verzweige
     moveq   #FALSE,d1
     move.w  d1,bfo_state(a3) ;Blind-Fader-Out aus
 bfo_no_restart_registers_table
-    move.w  d0,bf_registers_table_start(a3) ;retten
+    move.w  d0,bf_registers_table_start(a3) 
     MOVEF.W bf_registers_table_length,d3
     MOVEF.W cl2_extension1_SIZE,d4
     moveq   #bf_step2,d5
