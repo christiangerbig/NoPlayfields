@@ -1208,10 +1208,10 @@ blind_fader_in
     move.w  d2,d0            
     addq.w  #bf_speed,d0     ;Startwert der Tabelle erhöhen
     cmp.w   #bf_registers_table_length/2,d0 ;Ende der Tabelle erreicht ?
-    ble.s   bf_no_restart_registers_table ;Nein -> verzweige
+    ble.s   bf_save_registers_table_start ;Nein -> verzweige
     moveq   #FALSE,d1
     move.w  d1,bfi_state(a3) ;Blind-Fader-In aus
-bf_no_restart_registers_table
+bf_save_registers_table_start
     move.w  d0,bf_registers_table_start(a3) 
     MOVEF.W bf_registers_table_length,d3
     MOVEF.W cl2_extension1_SIZE,d4
@@ -1269,10 +1269,10 @@ blind_fader_out
     move.w  bf_registers_table_start(a3),d2 ;Startwert der Tabelle holen
     move.w  d2,d0            
     subq.w  #bf_speed,d0     ;Startwert der Tabelle verringern
-    bpl.s   bfo_no_restart_registers_table ;Wenn positiv -> verzweige
+    bpl.s   bfo_save_registers_table_start ;Wenn positiv -> verzweige
     moveq   #FALSE,d1
     move.w  d1,bfo_state(a3) ;Blind-Fader-Out aus
-bfo_no_restart_registers_table
+bfo_save_registers_table_start
     move.w  d0,bf_registers_table_start(a3) 
     MOVEF.W bf_registers_table_length,d3
     MOVEF.W cl2_extension1_SIZE,d4
