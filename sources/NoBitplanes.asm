@@ -1568,7 +1568,7 @@ vst_text
   REPT vst_text_characters_number/((vst_origin_character_y_size+1)/vst_text_character_y_size)
     DC.B " "
   ENDR
-  DC.B "RESISTANCE IS BACK WITH A NEW INTRO CALLED   NO!BITPLANES                 "
+  DC.B "RESISTANCE IS BACK WITH A NEW INTRO CALLED   NO BITPLANES                 "
 
   DC.B "GREETINGS FLY TO   "
   DC.B "#DESIRE#   "
