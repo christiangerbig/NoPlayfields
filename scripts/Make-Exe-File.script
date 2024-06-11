@@ -1,3 +1,3 @@
-CD Daten:Asm-Sources.AGA/NoBitplanes/sources
+CD Daten:Asm-Sources.AGA/projects/NoBitplanes/sources
 Programme:Programmieren/OMA_2.05/OMA NoBitplanes.asm -o Programme:RSE-NoBitplanes -c c -m >RAM:make-output.txt
 CD /
