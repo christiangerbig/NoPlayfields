@@ -675,10 +675,7 @@ vm_aci_step2anglestep  RS.W 1
 vm_audchaninfo_SIZE    RS.B 0
 
 
-; ## Beginn des Initialisierungsprogramms ##
-; ------------------------------------------
-
-  INCLUDE "sys-init.i"
+  INCLUDE "sys-wrapper.i"
 
 ; ** Eigene Variablen initialisieren **
 ; -------------------------------------
@@ -961,12 +958,6 @@ init_second_copperlist
   COP_INIT_COPINT cl2,cl2_HSTART2,cl2_VSTART2
 
   COPY_COPPERLIST cl2,2
-
-
-; ** CIA-Timer starten **
-; -----------------------
-
-  INCLUDE "continuous-timers-start.i"
 
 
 ; ## Hauptprogramm ##
@@ -1413,18 +1404,6 @@ EXTER_int_server
   CNOP 0,4
 NMI_int_server
   rts
-
-
-; ** Timer stoppen **
-; -------------------
-
-  INCLUDE "continuous-timers-stop.i"
-
-
-; ## System wieder in Ausganszustand zurücksetzen ##
-; --------------------------------------------------
-
-  INCLUDE "sys-return.i"
 
 
 ; ## Hilfsroutinen ##
