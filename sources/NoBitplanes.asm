@@ -204,15 +204,15 @@ MINROW                          EQU VSTART_256_LINES
 
   IFNE open_border_enabled 
 pf_pixel_per_datafetch          EQU 16 ;1x
-DDFSTRT_bits                    EQU DDFSTART_OVERSCAN_32_pixel
+DDFSTRT_bits                    EQU DDFSTART_OVERSCAN_32_PIXEL
 DDFSTOP_bits                    EQU DDFSTOP_OVERSCAN_32_PIXEL_MIN
   ENDC
 spr_pixel_per_datafetch         EQU 32 ;2x
 
-display_window_hstart           EQU HSTART_44_chunky_pixel
+display_window_hstart           EQU HSTART_44_CHUNKY_PIXEL
 display_window_vstart           EQU MINROW
 diwstrt_bits                    EQU ((display_window_VSTART&$ff)*DIWSTRTF_V0)+(display_window_HSTART&$ff)
-display_window_hstop            EQU HSTOP_44_chunky_pixel
+display_window_hstop            EQU HSTOP_44_CHUNKY_PIXEL
 display_window_vstop            EQU VSTOP_256_lines
 diwstop_bits                    EQU ((display_window_VSTOP&$ff)*DIWSTOPF_V0)+(display_window_HSTOP&$ff)
 
@@ -650,7 +650,7 @@ bfo_active                 RS.W 1
 ; **** Main ****
 fx_active                  RS.W 1
 
-variables_SIZE             RS.B 0
+variables_size             RS.B 0
 
 
 ; **** PT-Replay ****
@@ -922,11 +922,11 @@ init_first_copperlist
   bsr.s   cl1_init_playfield_registers
   bsr     cl1_init_sprite_pointers
   IFEQ open_border_enabled
-    COP_MOVE_QUICK TRUE,COPJMP2
+    COP_MOVEQ TRUE,COPJMP2
     bra     cl1_set_sprite_pointers
   ELSE
     bsr.s   cl1_init_bitplane_pointers
-    COP_MOVE_QUICK TRUE,COPJMP2
+    COP_MOVEQ TRUE,COPJMP2
     bsr     cl1_set_sprite_pointers
     bra     cl1_set_bitplane_pointers
   ENDC
@@ -947,16 +947,16 @@ init_first_copperlist
 ; -----------------------------------
   CNOP 0,4
 init_second_copperlist
-  move.l  cl2_construction2(a3),a0 ;Aufbau-CL
+  move.l  cl2_construction2(a3),a0 
   bsr.s   cl2_init_bplcon4_registers
   bsr.s   cl2_init_copper_interrupt
-  COP_LIST_END
+  COP_LISTEND
   bsr     copy_second_copperlist
   bra     swap_second_copperlist
 
   COP_INIT_BPLCON4_CHUNKY_SCREEN cl2,cl2_hstart1,cl2_vstart1,cl2_display_x_size,cl2_display_y_size,open_border_enabled,FALSE,FALSE,NOOP<<16
 
-  COP_INIT_COPPER_INTERRUPT cl2,cl2_hstart2,cl2_vstart2
+  COP_INIT_COPINT cl2,cl2_hstart2,cl2_vstart2
 
   COPY_COPPERLIST cl2,2
 
