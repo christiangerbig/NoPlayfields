@@ -1093,7 +1093,7 @@ vert_scrolltext_loop
   move.w  d0,d2              ;Y retten
   MULUF.L vst_object_width*vst_object_depth,d0 ;Y-Offset
   add.l   d3,d0              ;Y-Offset
-  WAIT_BLITTER
+  WAITBLIT
   move.l  (a1)+,(a2)         ;Char
   move.l  d0,(a4)            ;Sprite0-Struktur
   move.w  d4,(a5)            ;Blitter starten
@@ -1114,7 +1114,7 @@ vst_no_vert_scrolltext
   CNOP 0,4
 vst_init_copy_blit
   move.w  #DMAF_BLITHOG+DMAF_SETCLR,DMACON-DMACONR(a6) ;BLTPRI an
-  WAIT_BLITTER
+  WAITBLIT
   move.l  #(BC0F_SRCA+BC0F_DEST+ANBNC+ANBC+ABNC+ABC)<<16,BLTCON0-DMACONR(a6) ;Minterm D=A
   moveq   #FALSE,d0
   move.l  d0,BLTAFWM-DMACONR(a6) ;Ausmaskierung
