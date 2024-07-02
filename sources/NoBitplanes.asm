@@ -60,9 +60,9 @@
 ; ** Konstanten **
   INCLUDE "equals.i"
 
-requires_68030                  EQU FALSE  
-requires_68040                  EQU FALSE
-requires_68060                  EQU FALSE
+requires_030_cpu                EQU FALSE  
+requires_040_cpu                EQU FALSE
+requires_060_cpu                EQU FALSE
 requires_fast_memory            EQU FALSE
 requires_multiscan_monitor      EQU FALSE
 
@@ -208,10 +208,10 @@ spr_pixel_per_datafetch         EQU 32 ;2x
 
 display_window_hstart           EQU HSTART_44_CHUNKY_PIXEL
 display_window_vstart           EQU MINROW
-diwstrt_bits                    EQU ((display_window_VSTART&$ff)*DIWSTRTF_V0)+(display_window_HSTART&$ff)
+diwstrt_bits                    EQU ((display_window_vstart&$ff)*DIWSTRTF_V0)+(display_window_hstart&$ff)
 display_window_hstop            EQU HSTOP_44_CHUNKY_PIXEL
 display_window_vstop            EQU VSTOP_256_lines
-diwstop_bits                    EQU ((display_window_VSTOP&$ff)*DIWSTOPF_V0)+(display_window_HSTOP&$ff)
+diwstop_bits                    EQU ((display_window_vstop&$ff)*DIWSTOPF_V0)+(display_window_hstop&$ff)
 
   IFNE open_border_enabled 
 pf1_plane_width                 EQU pf1_x_size3/8
@@ -223,7 +223,7 @@ bplcon0_bits                    EQU BPLCON0F_ECSENA+((pf_depth>>3)*BPLCON0F_BPU3
 bplcon3_bits1                   EQU BPLCON3F_SPRES0
 bplcon3_bits2                   EQU bplcon3_bits1+BPLCON3F_LOCT
 bplcon4_bits                    EQU (BPLCON4F_OSPRM4*spr_odd_color_table_select)+(BPLCON4F_ESPRM4*spr_even_color_table_select)
-diwhigh_bits                 EQU (((display_window_HSTOP&$100)>>8)*DIWHIGHF_HSTOP8)+(((display_window_VSTOP&$700)>>8)*DIWHIGHF_VSTOP8)+(((display_window_HSTART&$100)>>8)*DIWHIGHF_HSTART8)+((display_window_VSTART&$700)>>8)
+diwhigh_bits                    EQU (((display_window_hstop&$100)>>8)*DIWHIGHF_HSTOP8)+(((display_window_vstop&$700)>>8)*DIWHIGHF_VSTOP8)+(((display_window_hstart&$100)>>8)*DIWHIGHF_HSTART8)+((display_window_vstart&$700)>>8)
 fmode_bits                      EQU FMODEF_SPR32
 color00_bits                    EQU $001122
 
@@ -231,9 +231,9 @@ cl2_display_x_size              EQU 352
 cl2_display_width               EQU cl2_display_x_size/8
 cl2_display_y_size              EQU visible_lines_number
   IFEQ open_border_enabled
-cl2_hstart1                     EQU display_window_HSTART-(1*CMOVE_SLOT_PERIOD)-4
+cl2_hstart1                     EQU display_window_hstart-(1*CMOVE_SLOT_PERIOD)-4
   ELSE
-cl2_hstart1                     EQU display_window_HSTART-4
+cl2_hstart1                     EQU display_window_hstart-4
   ENDC
 cl2_vstart1                     EQU MINROW
 cl2_hstart2                     EQU $00
@@ -247,8 +247,8 @@ lg_image_plane_width            EQU lg_image_x_size/8
 lg_image_y_size                 EQU 256
 lg_image_depth                  EQU 16
 
-lg_image_x_position             EQU display_window_HSTART
-lg_image_y_position             EQU display_window_VSTART
+lg_image_x_position             EQU display_window_hstart
+lg_image_y_position             EQU display_window_vstart
 
 ; **** PT-Replay ****
 pt_fade_out_delay               EQU 1 ;Tick
@@ -843,8 +843,8 @@ lg_init_sprites_loop
 ; ** Sprite-Koordinaten initialisieren **
   CNOP 0,4
 vst_init_xy_coordinates
-  move.w  #(display_window_HSTOP-vst_text_character_x_size)*4,d0 ;X-Koord.
-  moveq   #display_window_VSTART-vst_text_character_y_size,d1 ;Y-Koord.
+  move.w  #(display_window_hstop-vst_text_character_x_size)*4,d0 ;X-Koord.
+  moveq   #display_window_vstart-vst_text_character_y_size,d1 ;Y-Koord.
   move.w  #vst_object_y_size,d2 ;Höhe
   add.w   d1,d2              ;Höhe zu Y dazuaddieren
   move.l  spr_pointers_construction+(2*LONGWORD_SIZE)(pc),a0 ;Sprite2-Struktur
