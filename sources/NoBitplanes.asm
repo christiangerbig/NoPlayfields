@@ -26,6 +26,9 @@
   MC68040
 
 
+DEF_PT_VERSION_3.0B
+
+
 ; ** Library-Includes V.3.x nachladen **
   INCDIR "Daten:include3.5/"
 
@@ -72,16 +75,15 @@ text_output_enabled             EQU FALSE
 
 open_border_enabled             EQU TRUE
 
-pt_V3.0b
-  IFD pt_v2.3a
+  IFD DEF_PT_VERSION_2.3A
     INCLUDE "music-tracker/pt2-equals.i"
   ENDC
-  IFD pt_v3.0b
+  IFD DEF_PT_VERSION_3.0B
     INCLUDE "music-tracker/pt3-equals.i"
   ENDC
 pt_ciatiming_enabled            EQU TRUE
 pt_finetune_enabled             EQU FALSE
-  IFD pt_v3.0b
+  IFD DEF_PT_VERSION_3.0B
 pt_metronome_enabled            EQU FALSE
   ENDC
 pt_mute_enabled                 EQU FALSE
@@ -157,10 +159,10 @@ spr_even_color_table_select     EQU 1 ;Scrolltext (9)
 spr_used_number                 EQU 1
 spr_swap_number                 EQU 1
 
-  IFD pt_v2.3a
+  IFD DEF_PT_VERSION_2.3A
 audio_memory_size               EQU 0
   ENDC
-  IFD pt_v3.0b
+  IFD DEF_PT_VERSION_3.0B
 audio_memory_size               EQU 2
   ENDC
 
@@ -586,10 +588,10 @@ spr7_y_size2     EQU sprite7_size/(spr_x_size2/8)
 save_a7                    RS.L 1
 
 ; **** PT-Replay ****
-  IFD pt_v2.3a
+  IFD DEF_PT_VERSION_2.3A
     INCLUDE "music-tracker/pt2-variables-offsets.i"
   ENDC
-  IFD pt_v3.0b
+  IFD DEF_PT_VERSION_3.0B
     INCLUDE "music-tracker/pt3-variables-offsets.i"
   ENDC
 
@@ -649,10 +651,10 @@ vm_audchaninfo_size    RS.B 0
 init_own_variables
 
 ; **** PT-Replay ****
-  IFD pt_v2.3a
+  IFD DEF_PT_VERSION_2.3A
     PT2_INIT_VARIABLES
   ENDC
-  IFD pt_v3.0b
+  IFD DEF_PT_VERSION_3.0B
     PT3_INIT_VARIABLES
   ENDC
 
@@ -1291,10 +1293,10 @@ VERTB_int_server
   ENDC
 
 ; ** PT-replay routine **
-  IFD pt_v2.3a
+  IFD DEF_PT_VERSION_2.3A
     PT2_REPLAY pt_effects_handler
   ENDC
-  IFD pt_v3.0b
+  IFD DEF_PT_VERSION_3.0B
     PT3_REPLAY pt_effects_handler
   ENDC
 
@@ -1367,10 +1369,10 @@ sine_table
   INCLUDE "music-tracker/pt-vibrato-tremolo-table.i"
 
 ; ** "Arpeggio/Tone Portamento" **
-  IFD pt_v2.3a
+  IFD DEF_PT_VERSION_2.3A
     INCLUDE "music-tracker/pt2-period-table.i"
   ENDC
-  IFD pt_v3.0b
+  IFD DEF_PT_VERSION_3.0B
     INCLUDE "music-tracker/pt3-period-table.i"
   ENDC
 
