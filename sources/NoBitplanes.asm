@@ -21,15 +21,12 @@
 
 ; Ausführungszeit 68020: 199 Rasterzeilen
 
+
   SECTION code_and_variables,CODE
 
   MC68040
 
 
-DEF_PT_VERSION_3.0B
-
-
-; ** Library-Includes V.3.x nachladen **
   INCDIR "Daten:include3.5/"
 
   INCLUDE "exec/exec.i"
@@ -60,7 +57,12 @@ DEF_PT_VERSION_3.0B
   INCDIR "Daten:Asm-Sources.AGA/normsource-includes/"
 
 
-; ** Konstanten **
+PROTRACKER_VERSION_3.0B         SET 1
+
+
+  INCLUDE "macros.i"
+
+
   INCLUDE "equals.i"
 
 requires_030_cpu                EQU FALSE  
@@ -75,15 +77,15 @@ text_output_enabled             EQU FALSE
 
 open_border_enabled             EQU TRUE
 
-  IFD DEF_PT_VERSION_2.3A
+  IFD PROTRACKER_VERSION_2.3A 
     INCLUDE "music-tracker/pt2-equals.i"
   ENDC
-  IFD DEF_PT_VERSION_3.0B
+  IFD PROTRACKER_VERSION_3.0B
     INCLUDE "music-tracker/pt3-equals.i"
   ENDC
 pt_ciatiming_enabled            EQU TRUE
 pt_finetune_enabled             EQU FALSE
-  IFD DEF_PT_VERSION_3.0B
+  IFD PROTRACKER_VERSION_3.0B
 pt_metronome_enabled            EQU FALSE
   ENDC
 pt_mute_enabled                 EQU FALSE
@@ -159,10 +161,10 @@ spr_even_color_table_select     EQU 1 ;Scrolltext (9)
 spr_used_number                 EQU 1
 spr_swap_number                 EQU 1
 
-  IFD DEF_PT_VERSION_2.3A
+  IFD PROTRACKER_VERSION_2.3A 
 audio_memory_size               EQU 0
   ENDC
-  IFD DEF_PT_VERSION_3.0B
+  IFD PROTRACKER_VERSION_3.0B
 audio_memory_size               EQU 2
   ENDC
 
@@ -203,17 +205,13 @@ MINROW                          EQU VSTART_256_LINES
 
   IFNE open_border_enabled 
 pf_pixel_per_datafetch          EQU 16 ;1x
-DDFSTRT_bits                    EQU DDFSTART_OVERSCAN_32_PIXEL
-DDFSTOP_bits                    EQU DDFSTOP_OVERSCAN_32_PIXEL_MIN
   ENDC
 spr_pixel_per_datafetch         EQU 32 ;2x
 
 display_window_hstart           EQU HSTART_44_CHUNKY_PIXEL
 display_window_vstart           EQU MINROW
-diwstrt_bits                    EQU ((display_window_vstart&$ff)*DIWSTRTF_V0)+(display_window_hstart&$ff)
 display_window_hstop            EQU HSTOP_44_CHUNKY_PIXEL
-display_window_vstop            EQU VSTOP_256_lines
-diwstop_bits                    EQU ((display_window_vstop&$ff)*DIWSTOPF_V0)+(display_window_hstop&$ff)
+display_window_vstop            EQU VSTOP_256_LINES
 
   IFNE open_border_enabled 
 pf1_plane_width                 EQU pf1_x_size3/8
@@ -221,12 +219,27 @@ data_fetch_width                EQU pixel_per_line/8
 pf1_plane_moduli                EQU -(pf1_plane_width-(pf1_plane_width-data_fetch_width))
   ENDC
 
+  IFEQ open_border_enabled
+diwstrt_bits                    EQU ((display_window_vstart&$ff)*DIWSTRTF_V0)+(display_window_hstart&$ff)
+diwstop_bits                    EQU ((display_window_vstop&$ff)*DIWSTOPF_V0)+(display_window_hstop&$ff)
+bplcon0_bits                    EQU BPLCON0F_ECSENA+((pf_depth>>3)*BPLCON0F_BPU3)+(BPLCON0F_COLOR)+((pf_depth&$07)*BPLCON0F_BPU0)
+bplcon3_bits1                   EQU BPLCON3F_SPRES0
+bplcon3_bits2                   EQU bplcon3_bits1+BPLCON3F_LOCT
+bplcon4_bits                    EQU (BPLCON4F_OSPRM4*spr_odd_color_table_select)+(BPLCON4F_ESPRM4*spr_even_color_table_select)
+diwhigh_bits                    EQU (((display_window_hstop&$100)>>8)*DIWHIGHF_HSTOP8)+(((display_window_vstop&$700)>>8)*DIWHIGHF_VSTOP8)+(((display_window_hstart&$100)>>8)*DIWHIGHF_HSTART8)+((display_window_vstart&$700)>>8)
+fmode_bits                      EQU FMODEF_SPR32
+  ELSE
+diwstrt_bits                    EQU ((display_window_vstart&$ff)*DIWSTRTF_V0)+(display_window_hstart&$ff)
+diwstop_bits                    EQU ((display_window_vstop&$ff)*DIWSTOPF_V0)+(display_window_hstop&$ff)
+ddfstrt_bits                    EQU DDFSTART_OVERSCAN_32_PIXEL
+ddfstop_bits                    EQU DDFSTOP_OVERSCAN_32_PIXEL_MIN
 bplcon0_bits                    EQU BPLCON0F_ECSENA+((pf_depth>>3)*BPLCON0F_BPU3)+(BPLCON0F_COLOR)+((pf_depth&$07)*BPLCON0F_BPU0) 
 bplcon3_bits1                   EQU BPLCON3F_SPRES0
 bplcon3_bits2                   EQU bplcon3_bits1+BPLCON3F_LOCT
 bplcon4_bits                    EQU (BPLCON4F_OSPRM4*spr_odd_color_table_select)+(BPLCON4F_ESPRM4*spr_even_color_table_select)
 diwhigh_bits                    EQU (((display_window_hstop&$100)>>8)*DIWHIGHF_HSTOP8)+(((display_window_vstop&$700)>>8)*DIWHIGHF_VSTOP8)+(((display_window_hstart&$100)>>8)*DIWHIGHF_HSTART8)+((display_window_vstart&$700)>>8)
 fmode_bits                      EQU FMODEF_SPR32
+  ENDC
 color00_bits                    EQU $001122
 
 cl2_display_x_size              EQU 352
@@ -328,23 +341,15 @@ vcs3111_switch_table_size       EQU ct_size1
 extra_memory_size               EQU vcs3111_switch_table_size*BYTE_SIZE
 
 
-; ## Makrobefehle ##
-  INCLUDE "macros.i"
-
-
-; ** Struktur, die alle Exception-Vektoren-Offsets enthält **
   INCLUDE "except-vectors-offsets.i"
 
 
-; ** Struktur, die alle Eigenschaften des Extra-Playfields enthält **
   INCLUDE "extra-pf-attributes-structure.i"
 
 
-; ** Struktur, die alle Eigenschaften der Sprites enthält **
   INCLUDE "sprite-attributes-structure.i"
 
 
-; ** Struktur, die alle Registeroffsets der ersten Copperliste enthält **
   RSRESET
 
 cl1_begin        RS.B 0
@@ -356,7 +361,6 @@ cl1_COPJMP2      RS.L 1
 copperlist1_size RS.B 0
 
 
-; ** Struktur, die alle Registeroffsets der zweiten Copperliste enthält **
   RSRESET
 
 cl2_extension1      RS.B 0
@@ -411,6 +415,7 @@ cl2_ext1_BPLCON4_43 RS.L 1
 cl2_ext1_BPLCON4_44 RS.L 1
 
 cl2_extension1_size RS.B 0
+
 
   RSRESET
 
@@ -580,22 +585,22 @@ spr6_y_size2     EQU sprite6_size/(spr_x_size2/8)
 spr7_x_size2     EQU spr_x_size2
 spr7_y_size2     EQU sprite7_size/(spr_x_size2/8)
 
-; ** Struktur, die alle Variablenoffsets enthält **
-  INCLUDE "variables-offsets.i"
 
-; ** Relative offsets for variables **
+  RSRESET
+
+  INCLUDE "variables-offsets.i"
 
 save_a7                    RS.L 1
 
 ; **** PT-Replay ****
-  IFD DEF_PT_VERSION_2.3A
+  IFD PROTRACKER_VERSION_2.3A 
     INCLUDE "music-tracker/pt2-variables-offsets.i"
   ENDC
-  IFD DEF_PT_VERSION_3.0B
+  IFD PROTRACKER_VERSION_3.0B
     INCLUDE "music-tracker/pt3-variables-offsets.i"
   ENDC
 
-pt_effects_handler_active      RS.W 1
+pt_effects_handler_active  RS.W 1
 
 ; **** Vert-Colorscroll 3.1.1.1 ****
 vcs3111_switch_table_start RS.W 1
@@ -646,19 +651,18 @@ vm_audchaninfo_size    RS.B 0
 
   INCLUDE "sys-wrapper.i"
 
-; ** Eigene Variablen initialisieren **
   CNOP 0,4
 init_own_variables
 
 ; **** PT-Replay ****
-  IFD DEF_PT_VERSION_2.3A
+  IFD PROTRACKER_VERSION_2.3A 
     PT2_INIT_VARIABLES
   ENDC
-  IFD DEF_PT_VERSION_3.0B
+  IFD PROTRACKER_VERSION_3.0B
     PT3_INIT_VARIABLES
   ENDC
 
-  moveq   #0,d0
+  moveq   #TRUE,d0
   move.w  d0,pt_effects_handler_active(a3)
 
 ; **** Vert-Colorscroll 3.1.1.1 ****
@@ -721,7 +725,6 @@ init_all
    PT_INIT_AUDIO_TEMP_STRUCTURES
 
 ; ** Höchstes Pattern ermitteln und Tabelle mit Zeigern auf Samples initialisieren **
-
    PT_EXAMINE_SONG_STRUCTURE
 
   IFEQ pt_finetune_enabled
@@ -763,7 +766,6 @@ vm_init_audio_channel_info_structures
   INIT_CHARACTERS_IMAGES vst
 
 
-; ** Farbregister initialisieren **
   CNOP 0,4
 init_color_registers
   CPU_SELECT_COLOR_HIGH_BANK 0
@@ -801,7 +803,6 @@ init_color_registers
   CPU_INIT_COLOR_LOW COLOR00,32
   rts
 
-; ** Sprites initialisieren **
   CNOP 0,4
 init_sprites
   bsr.s   spr_init_pointers_table
@@ -809,8 +810,6 @@ init_sprites
   bsr     vst_init_xy_coordinates
   bra     spr_copy_structures
 
-; ** Tabelle mit Zeigern auf Sprites initialisieren **
-; ----------------------------------------------------
   INIT_SPRITE_POINTERS_TABLE
 
 ; **** Logo ****
@@ -855,10 +854,9 @@ vst_init_xy_coordinates
   move.w  d2,spr_pixel_per_datafetch/8(a0) SPRxCTL
   rts
 
-; ** Spritedaten kopieren **
   COPY_SPRITE_STRUCTURES
 
-; ** CIA-Timer initialisieren **
+
   CNOP 0,4
 init_CIA_timers
 
@@ -866,7 +864,6 @@ init_CIA_timers
   PT_INIT_TIMERS
   rts
 
-; ** 1. Copperliste initialisieren **
   CNOP 0,4
 init_first_copperlist
   move.l  cl1_display(a3),a0
@@ -894,7 +891,6 @@ init_first_copperlist
 
   COP_SET_SPRITE_POINTERS cl1,display,spr_number
 
-; ** 2. Copperliste initialisieren **
   CNOP 0,4
 init_second_copperlist
   move.l  cl2_construction2(a3),a0 
@@ -911,24 +907,17 @@ init_second_copperlist
   COPY_COPPERLIST cl2,2
 
 
-; ## Hauptprogramm ##
-; a3 ... Basisadresse aller Variablen
-; a4 ... CIA-A-Base
-; a5 ... CIA-B-Base
-; a6 ... DMACONR
   CNOP 0,4
 main_routine
   bsr.s   no_sync_routines
   bra.s   beam_routines
 
 
-; ## Routinen, die nicht mit der Bildwiederholfrequenz gekoppelt sind ##
   CNOP 0,4
 no_sync_routines
   rts
 
 
-; ## Rasterstahl-Routinen ##
   CNOP 0,4
 beam_routines
   bsr     wait_copint
@@ -947,15 +936,12 @@ beam_routines
   rts
 
 
-; ** Copperlisten vertauschen **
   SWAP_COPPERLIST cl2,2
 
-; ** Spritestrukturen vertauschen **
   SWAP_SPRITES_STRUCTURES spr,spr_swap_number,2
 
 
 ; ** Amplituden der einzelnen Kanäle in Erfahrung bringen **
-
   CNOP 0,4
 get_channels_amplitudes
   moveq   #vm_period_div,d2
@@ -1127,8 +1113,8 @@ vst_init_copy_blit
   GET_NEW_CHARACTER_IMAGE.W vst
 
 
-  IFEQ open_border_enabled
 ; ** Blind-Fader-In **
+  IFEQ open_border_enabled
     CNOP 0,4
 blind_fader_in
     tst.w   bfi_active(a3)   ;Blind-Fader-In an ?
@@ -1251,7 +1237,6 @@ no_blind_fader_out
   ENDC
 
 
-; ** Mouse-Handler **
   CNOP 0,4
 mouse_handler
   btst    #CIAB_GAMEPORT0,CIAPRA(a4) ;Linke Maustaste gedrückt ?
@@ -1267,18 +1252,17 @@ mh_quit
   rts
 
 
-; ## Interrupt-Routinen ##
   INCLUDE "int-autovectors-handlers.i"
 
-  IFEQ pt_ciatiming_enabled
 ; ** CIA-B timer A interrupt server **
+  IFEQ pt_ciatiming_enabled
   CNOP 0,4
 ciab_ta_int_server
   ENDC
 
-  IFNE pt_ciatiming_enabled
 ; ** Vertical blank interrupt server **
-  CNOP 0,4
+  IFNE pt_ciatiming_enabled
+    CNOP 0,4
 VERTB_int_server
   ENDC
 
@@ -1287,16 +1271,15 @@ VERTB_int_server
     bra.s   pt_PlayMusic
 
 ; ** Musik ausblenden **
-    PT_FADE_OUT fx_active
-
+    PT_FADE_OUT_VOLUME fx_active
     CNOP 0,4
   ENDC
 
 ; ** PT-replay routine **
-  IFD DEF_PT_VERSION_2.3A
+  IFD PROTRACKER_VERSION_2.3A 
     PT2_REPLAY pt_effects_handler
   ENDC
-  IFD DEF_PT_VERSION_3.0B
+  IFD PROTRACKER_VERSION_3.0B
     PT3_REPLAY pt_effects_handler
   ENDC
 
@@ -1337,26 +1320,22 @@ NMI_int_server
   rts
 
 
-; ## Hilfsroutinen ##
   INCLUDE "help-routines.i"
 
 
-; ## Speicherstellen für Tabellen und Strukturen ##
   INCLUDE "sys-structures.i"
 
-; ** Farben des ersten Playfields **
+
   CNOP 0,4
 pf1_color_table
   INCLUDE "Daten:Asm-Sources.AGA/projects/NoBitplanes/colortables/vcs3111_color-gradient.ct"
 
-; ** Adressen der Sprites **
 spr_pointers_construction
   DS.L spr_number
 
 spr_pointers_display
   DS.L spr_number
 
-; ** Sinus / Cosinustabelle **
 sine_table
   INCLUDE "sine-table-256x32.i"
 
@@ -1369,10 +1348,10 @@ sine_table
   INCLUDE "music-tracker/pt-vibrato-tremolo-table.i"
 
 ; ** "Arpeggio/Tone Portamento" **
-  IFD DEF_PT_VERSION_2.3A
+  IFD PROTRACKER_VERSION_2.3A 
     INCLUDE "music-tracker/pt2-period-table.i"
   ENDC
-  IFD DEF_PT_VERSION_3.0B
+  IFD PROTRACKER_VERSION_3.0B
     INCLUDE "music-tracker/pt3-period-table.i"
   ENDC
 
@@ -1436,15 +1415,12 @@ bf_registers_table
   ENDC
 
 
-; ## Speicherstellen allgemein ##
   INCLUDE "sys-variables.i"
 
 
-; ## Speicherstellen für Namen ##
   INCLUDE "sys-names.i"
 
 
-; ## Speicherstellen für Texte ##
   INCLUDE "error-texts.i"
 
 ; **** Vertical-Scrolltext ****
@@ -1478,11 +1454,12 @@ vst_text
   DC.B FALSE
   EVEN
 
-program_version DC.B "$VER: RSE-NoBitplanes 1.1 beta (2.6.24)",0
+
+  DC.B "$VER: RSE-NoBitplanes 1.1 beta (2.6.24)",0
   EVEN
 
 
-; ## Audiodaten nachladen ##
+; ** Audiodaten nachladen **
 
 ; **** PT-Replay ****
   IFEQ pt_split_module_enabled
@@ -1496,7 +1473,7 @@ pt_auddata SECTION pt_audio,DATA_C
   ENDC
 
 
-; ## Grafikdaten nachladen ##
+; ** Grafikdaten nachladen **
 
 ; **** Logo ****
 lg_image_data SECTION lg_gfx,DATA
