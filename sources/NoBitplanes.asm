@@ -1244,8 +1244,7 @@ mouse_handler
   rts
   CNOP 0,4
 mh_quit
-  moveq   #FALSE,d0
-  move.w  d0,pt_effects_handler_active(a3) ;FX-Abfrage aus
+  move.w  #FALSE,pt_effects_handler_active(a3) ;FX-Abfrage aus
   moveq   #0,d0
   move.w  d0,pt_fade_out_music_active(a3) ;Musik ausfaden
   move.w  d0,bfo_active(a3)  ;Blind-Fader-Out an
