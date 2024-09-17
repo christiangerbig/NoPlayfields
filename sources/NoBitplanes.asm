@@ -1246,7 +1246,7 @@ mouse_handler
 mh_quit
   move.w  #FALSE,pt_effects_handler_active(a3) ;FX-Abfrage aus
   moveq   #0,d0
-  move.w  d0,pt_fade_out_music_active(a3) ;Musik ausfaden
+  move.w  d0,pt_music_fader_active(a3) ;Musik ausfaden
   move.w  d0,bfo_active(a3)  ;Blind-Fader-Out an
   rts
 
@@ -1266,7 +1266,7 @@ VERTB_int_server
   ENDC
 
   IFEQ pt_music_fader_enabled
-    bsr.s   pt_fade_out_music
+    bsr.s   pt_music_fader
     bra.s   pt_PlayMusic
 
 ; ** Musik ausblenden **
