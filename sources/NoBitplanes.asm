@@ -77,17 +77,9 @@ text_output_enabled             EQU FALSE
 
 open_border_enabled             EQU TRUE
 
-  IFD PROTRACKER_VERSION_2.3A 
-    INCLUDE "music-tracker/pt2-equals.i"
-  ENDC
-  IFD PROTRACKER_VERSION_3.0B
-    INCLUDE "music-tracker/pt3-equals.i"
-  ENDC
 pt_ciatiming_enabled            EQU TRUE
 pt_finetune_enabled             EQU FALSE
-  IFD PROTRACKER_VERSION_3.0B
 pt_metronome_enabled            EQU FALSE
-  ENDC
 pt_mute_enabled                 EQU FALSE
 pt_track_volumes_enabled        EQU TRUE
 pt_track_periods_enabled        EQU TRUE
@@ -269,9 +261,9 @@ lg_image_y_position             EQU display_window_vstart
 pt_fade_out_delay               EQU 1 ;Tick
 
 ; **** Volume-Meter ****
-vm_source_channel1              EQU 2
-vm_source_channel2              EQU 3
-vm_source_channel3              EQU 3
+vm_source_chan1              EQU 2
+vm_source_chan2              EQU 3
+vm_source_chan3              EQU 3
 vm_period_div                   EQU 11
 vm_max_period_step              EQU 9
 vm_volume_div                   EQU 6
@@ -703,12 +695,12 @@ init_main
   IFEQ pt_finetune_enabled
     bsr     pt_InitFtuPeriodTableStarts
   ENDC
-  bsr     vm_init_audio_channel_info_structures
+  bsr     vm_init_audio_chan_info_structures
   bsr     vcs3111_init_switch_table
   bsr     vst_init_characters_offsets
   bsr     vst_init_characters_y_positions
   bsr     vst_init_characters_images
-  bsr     init_color_registers
+  bsr     init_colors
   bsr     init_sprites
   bsr     init_CIA_timers
   bsr     init_first_copperlist
@@ -735,8 +727,8 @@ init_main
 ; **** Volume-Meter ****
 ; ** Audiochandata-Strukturen initialisieren **
   CNOP 0,4
-vm_init_audio_channel_info_structures
-  lea     vm_audio_channel1_info(pc),a0
+vm_init_audio_chan_info_structures
+  lea     vm_audio_chan1_info(pc),a0
   moveq   #0,d0           
   move.w  d0,(a0)+           ;Y-Winkel Geschwindigkeit
   move.w  d0,(a0)+           ;Y-Winkel Schrittweite
@@ -767,9 +759,9 @@ vm_init_audio_channel_info_structures
 
 
   CNOP 0,4
-init_color_registers
+init_colors
   CPU_SELECT_COLOR_HIGH_BANK 0
-  CPU_INIT_COLOR_HIGH COLOR00,32,pf1_color_table
+  CPU_INIT_COLOR_HIGH COLOR00,32,pf1_rgb8_color_table
   CPU_SELECT_COLOR_HIGH_BANK 1
   CPU_INIT_COLOR_HIGH COLOR00,32
   CPU_SELECT_COLOR_HIGH_BANK 2
@@ -786,7 +778,7 @@ init_color_registers
   CPU_INIT_COLOR_HIGH COLOR00,32
 
   CPU_SELECT_COLOR_LOW_BANK 0
-  CPU_INIT_COLOR_LOW COLOR00,32,pf1_color_table
+  CPU_INIT_COLOR_LOW COLOR00,32,pf1_rgb8_color_table
   CPU_SELECT_COLOR_LOW_BANK 1
   CPU_INIT_COLOR_LOW COLOR00,32
   CPU_SELECT_COLOR_LOW_BANK 2
@@ -805,9 +797,9 @@ init_color_registers
 
   CNOP 0,4
 init_sprites
-  bsr.s   spr_init_pointers_table
+  bsr.s   spr_init_ptrs_table
   bsr.s   lg_init_sprites
-  bsr     vst_init_xy_coordinates
+  bsr     vst_init_xy_coords
   bra     spr_copy_structures
 
   INIT_SPRITE_POINTERS_TABLE
@@ -819,7 +811,7 @@ lg_init_sprites
   moveq   #lg_image_y_position,d1 ;Y-Koord.
   move.w  #lg_image_y_size,d2 ;Höhe
   add.w   d1,d2              ;Höhe zu Y dazuaddieren
-  lea     spr_pointers_construction(pc),a2 ;Zeiger auf Sprites
+  lea     spr_ptrs_construction(pc),a2 ;Zeiger auf Sprites
   SET_SPRITE_POSITION d0,d1,d2
   move.l  (a2)+,a0           ;1. Sprite-Struktur (SPR0)
   move.w  d1,(a0)            ;SPRxPOS
@@ -843,12 +835,12 @@ lg_init_sprites_loop
 ; **** Vert-Scrolltext ****
 ; ** Sprite-Koordinaten initialisieren **
   CNOP 0,4
-vst_init_xy_coordinates
+vst_init_xy_coords
   move.w  #(display_window_hstop-vst_text_character_x_size)*4,d0 ;X-Koord.
   moveq   #display_window_vstart-vst_text_character_y_size,d1 ;Y-Koord.
   move.w  #vst_object_y_size,d2 ;Höhe
   add.w   d1,d2              ;Höhe zu Y dazuaddieren
-  move.l  spr_pointers_construction+(2*LONGWORD_SIZE)(pc),a0 ;Sprite2-Struktur
+  move.l  spr_ptrs_construction+(2*LONGWORD_SIZE)(pc),a0 ;Sprite2-Struktur
   SET_SPRITE_POSITION d0,d1,d2
   move.w  d1,(a0)            ;SPRxPOS
   move.w  d2,spr_pixel_per_datafetch/8(a0) SPRxCTL
@@ -867,16 +859,16 @@ init_CIA_timers
   CNOP 0,4
 init_first_copperlist
   move.l  cl1_display(a3),a0
-  bsr.s   cl1_init_playfield_registers
-  bsr     cl1_init_sprite_pointers
+  bsr.s   cl1_init_playfield_props
+  bsr     cl1_init_sprite_ptrs
   IFEQ open_border_enabled
     COP_MOVEQ TRUE,COPJMP2
-    bra     cl1_set_sprite_pointers
+    bra     cl1_set_sprite_ptrs
   ELSE
-    bsr.s   cl1_init_bitplane_pointers
+    bsr.s   cl1_init_plane_ptrs
     COP_MOVEQ TRUE,COPJMP2
-    bsr     cl1_set_sprite_pointers
-    bra     cl1_set_bitplane_pointers
+    bsr     cl1_set_sprite_ptrs
+    bra     cl1_set_plane_ptrs
   ENDC
 
   IFEQ open_border_enabled
@@ -894,7 +886,7 @@ init_first_copperlist
   CNOP 0,4
 init_second_copperlist
   move.l  cl2_construction2(a3),a0 
-  bsr.s   cl2_init_bplcon4_registers
+  bsr.s   cl2_init_bplcon4
   bsr.s   cl2_init_copper_interrupt
   COP_LISTEND
   bsr     copy_second_copperlist
@@ -924,7 +916,7 @@ beam_routines
   bsr.s   swap_second_copperlist
   bsr.s   spr_swap_structures
   bsr     vert_scrolltext
-  bsr     get_channels_amplitudes
+  bsr     get_chans_amplitudes
   bsr     vert_colorscroll3111
   IFEQ open_border_enabled
     bsr     blind_fader_in
@@ -943,25 +935,25 @@ beam_routines
 
 ; ** Amplituden der einzelnen Kanäle in Erfahrung bringen **
   CNOP 0,4
-get_channels_amplitudes
+get_chans_amplitudes
   moveq   #vm_period_div,d2
   moveq   #vm_volume_div,d3
   lea	  pt_audchan1temp(pc),a0 ;Zeiger auf temporäre Struktur des 1. Kanals
-  lea     vm_audio_channel1_info(pc),a1
-  bsr.s   get_channel_amplitude
+  lea     vm_audio_chan1_info(pc),a1
+  bsr.s   get_chan_amplitude
   lea	  pt_audchan2temp(pc),a0 ;Zeiger auf temporäre Struktur des 2. Kanals
-  bsr.s   get_channel_amplitude
+  bsr.s   get_chan_amplitude
   lea	  pt_audchan3temp(pc),a0 ;Zeiger auf temporäre Struktur des 3. Kanals
-  bsr.s   get_channel_amplitude
+  bsr.s   get_chan_amplitude
   lea	  pt_audchan4temp(pc),a0 ;Zeiger auf temporäre Struktur des 4. Kanals
 
 ; ** Routine get-channel-amplitude **
 ; d2 ... Skalierung
 ; a0 ... Temporäre Struktur des Audiokanals
 ; a1 ... Zeiger auf Amplitudenwert des Kanals
-get_channel_amplitude
+get_chan_amplitude
   tst.b   n_note_trigger(a0) ;Neue Note angespielt ?
-  bne.s   no_get_channel_amplitude ;Nein -> verzweige
+  bne.s   no_get_chan_amplitude ;Nein -> verzweige
   moveq   #FALSE,d1
   move.b  d1,n_note_trigger(a0) ;Note Trigger Flag zurücksetzen
   move.w  n_period(a0),d0    ;Angespielte Periode 
@@ -975,7 +967,7 @@ get_channel_amplitude
   move.w  n_current_volume(a0),d0
   DIVUF.W d3,d0,d1
   move.w  d1,(a1)+
-no_get_channel_amplitude
+no_get_chan_amplitude
   rts
 
 ; ** Vertikaler/horizontaler Colorscroll **
@@ -983,23 +975,23 @@ no_get_channel_amplitude
 vert_colorscroll3111
   movem.l a3-a6,-(a7)
   move.l  a7,save_a7(a3)     
-  moveq   #vm_source_channel1,d1
+  moveq   #vm_source_chan1,d1
   MULUF.W vm_audchaninfo_size/2,d1,d0
   move.w  vcs3111_switch_table_start(a3),d2 ;Startwert in Farbtabelle 
   move.w  d2,d0              
   move.w  vcs3111_step2_angle(a3),d4 ;Y-Step-Winkel 
   IFEQ vcs3111_switch_table_length_256
-    add.b (vm_audio_channel1_info+vm_aci_speed+1,pc,d1.w*2),d0 ;Startwert der Switchtabelle erhöhen
+    add.b (vm_audio_chan1_info+vm_aci_speed+1,pc,d1.w*2),d0 ;Startwert der Switchtabelle erhöhen
   ELSE
     MOVEF.W vcs3111_switch_table_size-1,d3 ;Anzahl der Einträge
-    add.w   (vm_audio_channel1_info+vm_aci_speed,pc,d1.w*2),d0 ;Startwert der Switchtabelle erhöhen
+    add.w   (vm_audio_chan1_info+vm_aci_speed,pc,d1.w*2),d0 ;Startwert der Switchtabelle erhöhen
     and.w   d3,d0            ;Überlauf entfernen
   ENDC
   move.w  d0,vcs3111_switch_table_start(a3) 
   move.w  d4,d0              
-  moveq   #vm_source_channel2,d1
+  moveq   #vm_source_chan2,d1
   MULUF.W vm_audchaninfo_size/2,d1,d6
-  add.b   (vm_audio_channel1_info+vm_aci_step2anglespeed+1,pc,d1.w*2),d0 ;nächster Y-Winkel
+  add.b   (vm_audio_chan1_info+vm_aci_step2anglespeed+1,pc,d1.w*2),d0 ;nächster Y-Winkel
   move.w  d0,vcs3111_step2_angle(a3) 
   MOVEF.L (cl2_extension1_size*(cl2_display_y_size/2))+4,d5
   move.l  extra_memory(a3),a0 ;Tabelle mit Switchwerten
@@ -1011,9 +1003,9 @@ vert_colorscroll3111
   lea     cl2_extension1_size(a2),a5 ;Start in CL 4. Quadrant
   move.w  #cl2_extension1_size,a6
   move.w  #(cl2_extension1_size*(cl2_display_y_size/2))-4,a7
-  moveq   #vm_source_channel3,d1
+  moveq   #vm_source_chan3,d1
   MULUF.W vm_audchaninfo_size/2,d1,d6
-  move.w  (vm_audio_channel1_info+vm_aci_step2anglestep,pc,d1.w*2),d7
+  move.w  (vm_audio_chan1_info+vm_aci_step2anglestep,pc,d1.w*2),d7
   swap    d7
   move.w  #(cl2_display_width/2)-1,d7 ;Anzahl der Spalten
 vert_colorscroll3111_loop1
@@ -1064,12 +1056,12 @@ vert_scrolltext
   tst.w   vst_enabled(a3) ;Scrolltext an ?
   bne.s   vst_no_vert_scrolltext ;Nein -> verzweige
   movem.l a4-a5,-(a7)
-  move.l  spr_pointers_construction+(2*LONGWORD_SIZE)(pc),d3 ;Sprite2-Struktur
+  move.l  spr_ptrs_construction+(2*LONGWORD_SIZE)(pc),d3 ;Sprite2-Struktur
   ADDF.L  (spr_pixel_per_datafetch/4),d3 ;Sprite-Header überspringen
   move.w  #(vst_copy_blit_y_size*64)+(vst_copy_blit_x_size/16),d4 ;BLTSIZE
   MOVEF.W vst_text_character_y_restart,d5
   lea     vst_characters_y_positions(pc),a0 ;Y-Positionen der Chars
-  lea     vst_characters_image_pointers(pc),a1 ;Zeiger auf Adressen der Char-Images
+  lea     vst_characters_image_ptrs(pc),a1 ;Zeiger auf Adressen der Char-Images
   lea     BLTAPT-DMACONR(a6),a2    ;Offset der Blitterregister auf Null setzen
   lea     BLTDPT-DMACONR(a6),a4
   lea     BLTSIZE-DMACONR(a6),a5
@@ -1326,13 +1318,13 @@ NMI_int_server
 
 
   CNOP 0,4
-pf1_color_table
+pf1_rgb8_color_table
   INCLUDE "Daten:Asm-Sources.AGA/projects/NoBitplanes/colortables/vcs3111_color-gradient.ct"
 
-spr_pointers_construction
+spr_ptrs_construction
   DS.L spr_number
 
-spr_pointers_display
+spr_ptrs_display
   DS.L spr_number
 
 sine_table
@@ -1367,16 +1359,16 @@ sine_table
 ; Tabelle mit Ausschlägen und Y-Winkeln der einzelnen Kanäle **
 
   CNOP 0,2
-vm_audio_channel1_info
+vm_audio_chan1_info
   DS.B vm_audchaninfo_size
 
-vm_audio_channel2_info
+vm_audio_chan2_info
   DS.B vm_audchaninfo_size
 
-vm_audio_channel3_info
+vm_audio_chan3_info
   DS.B vm_audchaninfo_size
 
-vm_audio_channel4_info
+vm_audio_chan4_info
   DS.B vm_audchaninfo_size
 
 ; **** Vertical-Scrolltext ****
@@ -1397,7 +1389,7 @@ vst_characters_y_positions
 
 ; ** Tabelle für Char-Image-Adressen **
   CNOP 0,4
-vst_characters_image_pointers
+vst_characters_image_ptrs
   DS.L vst_text_characters_number
 
 ; **** Blind-Fader ****
