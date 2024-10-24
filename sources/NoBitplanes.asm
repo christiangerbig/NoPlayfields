@@ -4,8 +4,8 @@
 ; # Datum:    02.06.2024       #
 ; # Version:  1.1 Beta         #
 ; # CPU:      68020+           #
-; # FASTMEM:  -                #
-; # Chipset:  AGA              #
+; # Fast-Memory:  -            #
+; # Chipset:  AGA PAL          #
 ; # OS:       3.0+             #
 ; ##############################
 
@@ -819,7 +819,7 @@ lg_init_sprites
   ADDF.W  (spr_pixel_per_datafetch/4),a0 ;Sprite-Header überspringen
   move.l  (a2),a1            ;2. Sprite-Struktur (SPR1)
   move.w  d1,(a1)            ;SPRxPOS
-  tas     d2                 ;Attached-Bit setzen
+  or.b    #SPRCTLF_ATT,d2                 ;Attached-Bit setzen
   move.w  d2,spr_pixel_per_datafetch/8(a1) SPRxCTL
   ADDF.W  (spr_pixel_per_datafetch/4),a1 ;Sprite-Header überspringen
   lea     lg_image_data,a2   ;Zeiger auf Grafikdaten
