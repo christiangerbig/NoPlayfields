@@ -915,6 +915,7 @@ beam_routines
   bsr     wait_copint
   bsr.s   swap_second_copperlist
   bsr.s   spr_swap_structures
+  bsr.s   spr_set_sprite_ptrs
   bsr     vert_scrolltext
   bsr     get_chans_amplitudes
   bsr     vert_colorscroll3111
@@ -930,7 +931,9 @@ beam_routines
 
   SWAP_COPPERLIST cl2,2
 
-  SWAP_SPRITES_STRUCTURES spr,spr_swap_number,2
+  SWAP_SPRITES spr,spr_swap_number,2
+
+  SET_SPRITES spr,spr_swap_number,2
 
 
 ; ** Amplituden der einzelnen Kanäle in Erfahrung bringen **
