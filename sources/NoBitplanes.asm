@@ -57,7 +57,7 @@
 	INCLUDE "hardware/dmabits.i"
 	INCLUDE "hardware/intbits.i"
 
-	INCDIR "Daten:Asm-Sources.AGA/normsource-includes/"
+	INCDIR "Daten:Asm-Sources.AGA/custom-includes/"
 
 
 PROTRACKER_VERSION_3.0B		 SET 1
@@ -91,7 +91,7 @@ pt_split_module_enabled		EQU TRUE
 pt_usedfx		 	EQU %1011110101111111
 pt_usedefx		 	EQU %0000000000000000
 
-vcs3111_switch_table_length_256 EQU TRUE
+vcs3111_bplam_table_length_256	EQU TRUE
 
 	IFEQ open_border_enabled
 dma_bits		 	EQU DMAF_SPRITE|DMAF_BLITTER|DMAF_COPPER|DMAF_MASTER|DMAF_SETCLR
@@ -331,9 +331,9 @@ segments_number1		EQU vcs3111_bars_number*2
 
 ct_size1			EQU color_values_number1*segments_number1
 
-vcs3111_switch_table_size	EQU ct_size1
+vcs3111_bplam_table_size	EQU ct_size1
 
-extra_memory_size		EQU vcs3111_switch_table_size*BYTE_SIZE
+extra_memory_size		EQU vcs3111_bplam_table_size*BYTE_SIZE
 
 
 	INCLUDE "except-vectors-offsets.i"
@@ -598,7 +598,7 @@ save_a7				RS.L 1
 pt_effects_handler_active	RS.W 1
 
 ; **** Vert-Colorscroll 3.1.1.1 ****
-vcs3111_switch_table_start	RS.W 1
+vcs3111_bplam_table_start	RS.W 1
 vcs3111_step2_angle		RS.W 1
 
 ; **** Vert-Scrolltext ****
@@ -619,7 +619,7 @@ bfo_active			RS.W 1
 	ENDC
 
 ; **** Main ****
-fx_active			RS.W 1
+stop_fx_active			RS.W 1
 
 variables_size			RS.B 0
 
@@ -660,7 +660,7 @@ init_main_variables
 	move.w	d0,pt_effects_handler_active(a3)
 
 ; **** Vert-Colorscroll 3.1.1.1 ****
-	move.w	d0,vcs3111_switch_table_start(a3)
+	move.w	d0,vcs3111_bplam_table_start(a3)
 	moveq	#sine_table_length/4,d2
 	move.w	d2,vcs3111_step2_angle(a3)
 
@@ -684,7 +684,7 @@ init_main_variables
 	ENDC
 
 ; **** Main ****
-	move.w	d1,fx_active(a3)
+	move.w	d1,stop_fx_active(a3)
 	rts
 
 	CNOP 0,4
@@ -696,8 +696,8 @@ init_main
 	IFEQ pt_finetune_enabled
 		bsr	pt_InitFtuPeriodTableStarts
 	ENDC
-	bsr	vm_init_audio_chan_info_structures
-	bsr	vcs3111_init_switch_table
+	bsr	vm_init_audio_channels_info
+	bsr	vcs3111_init_bplam_table
 	bsr	vst_init_characters_offsets
 	bsr	vst_init_characters_y_positions
 	bsr	vst_init_characters_images
@@ -722,7 +722,7 @@ init_main
 
 ; **** Volume-Meter ****
 	CNOP 0,4
-vm_init_audio_chan_info_structures
+vm_init_audio_channels_info
 	lea	vm_audio_channel1_info(pc),a0
 	moveq	#0,d0
 	move.w  d0,(a0)+	; Geschwindigkeit
@@ -743,7 +743,7 @@ vm_init_audio_chan_info_structures
 	rts
 
 ; **** Vert-Colorscroll ****
-	INIT_SWITCH_TABLE.B vcs3111,0,1,color_values_number1*segments_number1,extra_memory,a3
+	INIT_bplam_table.B vcs3111,0,1,color_values_number1*segments_number1,extra_memory,a3
 
 ; **** Vert-Scrolltext ****
 	INIT_CHARACTERS_OFFSETS.W vst
@@ -751,7 +751,6 @@ vm_init_audio_chan_info_structures
 	INIT_CHARACTERS_Y_POSITIONS vst
 
 	INIT_CHARACTERS_IMAGES vst
-
 
 	CNOP 0,4
 init_colors
@@ -802,17 +801,17 @@ init_sprites
 ; **** Logo ****
 	CNOP 0,4
 lg_init_sprites
-	move.w	#lg_image_x_position*4,d0
-	moveq	#lg_image_y_position,d1
+	move.w	#lg_image_x_position*4,d0 ; X-Pos.
+	moveq	#lg_image_y_position,d1	; VSTART
 	move.w	#lg_image_y_size,d2
-	add.w	d1,d2		;VSTOP
-	lea	spr_ptrs_construction(pc),a2 ; Zeiger auf Sprites
+	add.w	d1,d2			; VSTOP
+	lea	spr_ptrs_construction(pc),a2
 	SET_SPRITE_POSITION d0,d1,d2
-	move.l	(a2)+,a0		; 1. Sprite-Struktur (SPR0)
+	move.l	(a2)+,a0		; 1. Sprite-Struktur
 	move.w	d1,(a0)			; SPRxPOS
 	move.w	d2,spr_pixel_per_datafetch/8(a0) ; SPRxCTL
 	ADDF.W	(spr_pixel_per_datafetch/4),a0 ; Sprite-Header überspringen
-	move.l	(a2),a1			; 2. Sprite-Struktur (SPR1)
+	move.l	(a2),a1			; 2. Sprite-Struktur
 	move.w	d1,(a1)			; SPRxPOS
 	or.b	#SPRCTLF_ATT,d2
 	move.w	d2,spr_pixel_per_datafetch/8(a1) ; SPRxCTL
@@ -820,10 +819,10 @@ lg_init_sprites
 	lea	lg_image_data,a2	; Zeiger auf Grafikdaten
 	MOVEF.W lg_image_y_size-1,d7
 lg_init_sprites_loop
-	move.l	(a2)+,(a0)+		; Plane0 32 Pixel
-	move.l	(a2)+,(a0)+		; Plane1 32 Pixel
-	move.l	(a2)+,(a1)+		; Plane2 32 Pixel
-	move.l	(a2)+,(a1)+		; Plane3 32 Pixel
+	move.l	(a2)+,(a0)+		; Bitplane0 32 Pixel
+	move.l	(a2)+,(a0)+		; Bitplane1 32 Pixel
+	move.l	(a2)+,(a1)+		; Bitplane2 32 Pixel
+	move.l	(a2)+,(a1)+		; Bitplane3 32 Pixel
 	dbf	d7,lg_init_sprites_loop
 	rts
 
@@ -856,11 +855,11 @@ init_first_copperlist
 	bsr.s	cl1_init_playfield_props
 	bsr	cl1_init_sprite_ptrs
 	IFEQ open_border_enabled
-		COP_MOVEQ TRUE,COPJMP2
+		COP_MOVEQ 0,COPJMP2
 		bra	cl1_set_sprite_ptrs
 	ELSE
 		bsr.s	cl1_init_plane_ptrs
-		COP_MOVEQ TRUE,COPJMP2
+		COP_MOVEQ 0,COPJMP2
 		bsr	cl1_set_sprite_ptrs
 		bra	cl1_set_plane_ptrs
 	ENDC
@@ -911,14 +910,14 @@ beam_routines
 	bsr.s	spr_swap_structures
 	bsr.s	spr_set_sprite_ptrs
 	bsr	vert_scrolltext
-	bsr	get_chans_amplitudes
+	bsr	get_channels_amplitudes
 	bsr	vert_colorscroll3111
 	IFEQ open_border_enabled
 		bsr	blind_fader_in
 		bsr	blind_fader_out
 	ENDC
 	bsr	mouse_handler
-	tst.w	fx_active(a3)		; Effekte beendet ?
+	tst.w	stop_fx_active(a3)
 	bne	beam_routines
 	rts
 
@@ -931,34 +930,34 @@ beam_routines
 
 
 	CNOP 0,4
-get_chans_amplitudes
+get_channels_amplitudes
 	moveq	#vm_period_div,d2
 	moveq	#vm_volume_div,d3
 	lea	pt_audchan1temp(pc),a0
 	lea	vm_audio_channel1_info(pc),a1
-	bsr.s	get_chan_amplitude
+	bsr.s	get_channel_amplitude
 	lea	pt_audchan2temp(pc),a0
 	lea	vm_audio_channel2_info(pc),a1
-	bsr.s	get_chan_amplitude
+	bsr.s	get_channel_amplitude
 	lea	pt_audchan3temp(pc),a0
 	lea	vm_audio_channel3_info(pc),a1
-	bsr.s	get_chan_amplitude
+	bsr.s	get_channel_amplitude
 	lea	pt_audchan4temp(pc),a0
 	lea	vm_audio_channel4_info(pc),a1
-	bsr.s	get_chan_amplitude
+	bsr.s	get_channel_amplitude
 	rts
 
 	CNOP 0,4
-get_chan_amplitude
+get_channel_amplitude
 ; Input
 ; d2.w	... Skalierung
 ; a0	... Temporäre Struktur des Audiokanals
 ; a1	... Zeiger auf Kanalinfo-Struktur
 ; Result
 ; d0.l	... Kein Rückgabewert
-	tst.b	n_note_trigger(a0)	; Neue Note angespielt ?
-	bne.s	get_chan_amplitude_quit
-	move.b	#FALSE,n_note_trigger(a0)
+	tst.b	n_notetrigger(a0)	; Wurde neue Note angespielt ?
+	bne.s	get_channel_amplitude_quit
+	move.b	#FALSE,n_notetrigger(a0)
 	move.w	n_period(a0),d0
 	DIVUF.W d2,d0,d1
 	moveq	#vm_max_period_step,d0
@@ -967,10 +966,10 @@ get_chan_amplitude
 	move.w	d0,(a1)+		; Geschwindigkeit
 	lsr.w	#1,d0
 	move.w	d0,(a1)+		; Schrittweite
-	move.w	n_current_volume(a0),d0
+	move.w	n_currentvolume(a0),d0
 	DIVUF.W d3,d0,d1
 	move.w	d1,(a1)+
-get_chan_amplitude_quit
+get_channel_amplitude_quit
 	rts
 
 	CNOP 0,4
@@ -979,17 +978,17 @@ vert_colorscroll3111
 	move.l	a7,save_a7(a3)	
 	moveq	#vm_source_chan1,d1
 	MULUF.W audio_channel_info_size/WORD_SIZE,d1,d0
-	move.w	vcs3111_switch_table_start(a3),d2
+	move.w	vcs3111_bplam_table_start(a3),d2
 	move.w	d2,d0		
 	move.w	vcs3111_step2_angle(a3),d4
-	IFEQ vcs3111_switch_table_length_256
+	IFEQ vcs3111_bplam_table_length_256
 		add.b (vm_audio_channel1_info+aci_speed+1,pc,d1.w*2),d0 ; Startwert der Switchtabelle erhöhen
 	ELSE
-		MOVEF.W vcs3111_switch_table_size-1,d3 ; Anzahl der Einträge
+		MOVEF.W vcs3111_bplam_table_size-1,d3 ; Anzahl der Einträge
 		add.w	(vm_audio_channel1_info+aci_speed,pc,d1.w*2),d0 ; Startwert der Switchtabelle erhöhen
 		and.w	d3,d0		; Überlauf entfernen
 	ENDC
-	move.w	d0,vcs3111_switch_table_start(a3) 
+	move.w	d0,vcs3111_bplam_table_start(a3) 
 	move.w	d4,d0		
 	moveq	#vm_source_chan2,d1
 	MULUF.W audio_channel_info_size/WORD_SIZE,d1,d6
@@ -1023,7 +1022,7 @@ vert_colorscroll3111_loop2
 	move.b	d0,(a4)
 	add.l	a6,a4			; 3. Quadrant nächste Zeile in CL
 	move.b	d0,(a5)
-	IFEQ vcs3111_switch_table_length_256
+	IFEQ vcs3111_bplam_table_length_256
 		subq.b	#vcs3111_step1,d1 ; nächster Wert aus Tabelle
 	ELSE
 		subq.w	#vcs3111_step1,d1 ; nächster Wert aus Tabelle
@@ -1036,7 +1035,7 @@ vert_colorscroll3111_loop2
 	add.b	d7,d4			; nächster Y-Winkel
 	swap	d0
 	add.w	#vcs3111_step2_center,d0 ; + Y-Mittelpunkt
-	IFEQ vcs3111_switch_table_length_256
+	IFEQ vcs3111_bplam_table_length_256
 		sub.b	d0,d2		; Startwert verringern
 	ELSE
 		sub.w	d0,d2		; Startwert verringern
@@ -1054,9 +1053,9 @@ vert_colorscroll3111_loop2
 
 	CNOP 0,4
 vert_scrolltext
+	movem.l a4-a5,-(a7)
 	tst.w	vst_enabled(a3)
 	bne.s	vert_scrolltext_quit
-	movem.l a4-a5,-(a7)
 	move.l	spr_ptrs_construction+(2*LONGWORD_SIZE)(pc),d3 ; Sprite2-Struktur
 	ADDF.L	(spr_pixel_per_datafetch/4),d3 ; Sprite-Header überspringen
 	move.w	#(vst_copy_blit_y_size*64)+(vst_copy_blit_x_size/16),d4 ; BLTSIZE
@@ -1066,7 +1065,7 @@ vert_scrolltext
 	lea	BLTAPT-DMACONR(a6),a2
 	lea	BLTDPT-DMACONR(a6),a4
 	lea	BLTSIZE-DMACONR(a6),a5
-	bsr.s	vst_init_copy_blit
+	bsr.s	vert_scrolltext_init
 	moveq	#vst_text_characters_number-1,d7
 vert_scrolltext_loop
 	moveq	#0,d0
@@ -1089,11 +1088,11 @@ vert_scrolltext_skip
 	move.w	d2,(a0)+		; Y-Pos
 	dbf	d7,vert_scrolltext_loop
 	move.w	#DMAF_BLITHOG,DMACON-DMACONR(a6)
-	movem.l (a7)+,a4-a5
 vert_scrolltext_quit
+	movem.l (a7)+,a4-a5
 	rts
 	CNOP 0,4
-vst_init_copy_blit
+vert_scrolltext_init
 	move.w	#DMAF_BLITHOG+DMAF_SETCLR,DMACON-DMACONR(a6)
 	WAITBLIT
 	move.l	#(BC0F_SRCA+BC0F_DEST+ANBNC+ANBC+ABNC+ABC)<<16,BLTCON0-DMACONR(a6) ; Minterm D=A
@@ -1108,9 +1107,9 @@ vst_init_copy_blit
 	IFEQ open_border_enabled
 		CNOP 0,4
 blind_fader_in
+		move.l	a4,-(a7)
 		tst.w	bfi_active(a3)
 		bne.s	blind_fader_in_quit
-		move.l	a4,-(a7)
 		move.w	bf_registers_table_start(a3),d2 ; Registeradresse
 		move.w	d2,d0
 		addq.w	#bf_speed,d0	; Startwert der Tabelle erhöhen
@@ -1161,15 +1160,15 @@ blind_fader_in_skip2
 		sub.w	d3,d2		; Neustart
 blind_fader_in_skip3
 		dbf	d7,blind_fader_in_loop1
-		move.l	(a7)+,a4
 blind_fader_in_quit
+		move.l	(a7)+,a4
 		rts
 	
 		CNOP 0,4
 blind_fader_out
+		move.l	a4,-(a7)
 		tst.w	bfo_active(a3)
 		bne.s	blind_fader_out_quit
-		move.l	a4,-(a7)
 		move.w	bf_registers_table_start(a3),d2
 		move.w	d2,d0
 		subq.w	#bf_speed,d0	; Startwert der Tabelle verringern
@@ -1219,8 +1218,8 @@ blind_fader_out_skip2
 		sub.w	d3,d2		; Neustart
 blind_fader_out_skip3
 		dbf	d7,blind_fader_out_loop1
-		move.l	(a7)+,a4
 blind_fader_out_quit
+		move.l	(a7)+,a4
 		rts
 	ENDC
 
@@ -1233,36 +1232,32 @@ mouse_handler
 	CNOP 0,4
 mh_exit_demo
 	move.w	#FALSE,pt_effects_handler_active(a3)
-	moveq	#TRUE,d0
-	move.w	d0,pt_music_fader_active(a3)
-	move.w	d0,bfo_active(a3)
+	clr.w	pt_music_fader_active(a3)
+	clr.w	bfo_active(a3)
 	rts
 
 
 	INCLUDE "int-autovectors-handlers.i"
 
-; ** CIA-B timer A interrupt server **
 	IFEQ pt_ciatiming_enabled
 		CNOP 0,4
 ciab_ta_int_server
 	ENDC
 
-; ** Vertical blank interrupt server **
 	IFNE pt_ciatiming_enabled
 		CNOP 0,4
 VERTB_int_server
 	ENDC
 
+; **** PT-Replay ****
 	IFEQ pt_music_fader_enabled
 		bsr.s	pt_music_fader
 		bra.s	pt_PlayMusic
 
-; ** Musik ausblenden **
-		PT_FADE_OUT_VOLUME fx_active
+		PT_FADE_OUT_VOLUME stop_fx_active
 		CNOP 0,4
 	ENDC
 
-; ** PT-replay routine **
 	IFD PROTRACKER_VERSION_2.3A 
 		PT2_REPLAY pt_effects_handler
 	ENDC
@@ -1270,7 +1265,6 @@ VERTB_int_server
 		PT3_REPLAY pt_effects_handler
 	ENDC
 
-;--> 8xy "Not used/custom" <--
 	CNOP 0,4
 pt_effects_handler
 	tst.w	pt_effects_handler_active(a3)
@@ -1291,17 +1285,14 @@ pt_start_scrolltext
 	clr.w	vst_enabled(a3)
 	rts
 
-; ** CIA-B Timer B interrupt server **
 	CNOP 0,4
 ciab_tb_int_server
 	PT_TIMER_INTERRUPT_SERVER
 
-; ** Level-6-Interrupt-Server **
 	CNOP 0,4
 EXTER_int_server
 	rts
 
-; ** Level-7-Interrupt-Server **
 	CNOP 0,4
 NMI_int_server
 	rts
@@ -1444,12 +1435,12 @@ vst_text
 ; **** PT-Replay ****
 	IFEQ pt_split_module_enabled
 pt_auddata SECTION pt_audio,DATA
-	INCBIN "Daten:Asm-Sources.AGA/projects/NoBitplanes/modules/MOD.end_of_2021.song"
+		INCBIN "Daten:Asm-Sources.AGA/projects/NoBitplanes/modules/MOD.end_of_2021.song"
 pt_audsmps SECTION pt_audio2,DATA_C
 	INCBIN "Daten:Asm-Sources.AGA/projects/NoBitplanes/modules/MOD.end_of_2021.smps"
 	ELSE
 pt_auddata SECTION pt_audio,DATA_C
-	INCBIN "Daten:Asm-Sources.AGA/projects/NoBitplanes/modules/mod.end_of_2021"
+		INCBIN "Daten:Asm-Sources.AGA/projects/NoBitplanes/modules/mod.end_of_2021"
 	ENDC
 
 
