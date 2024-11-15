@@ -60,7 +60,7 @@
 	INCDIR "Daten:Asm-Sources.AGA/custom-includes/"
 
 
-PROTRACKER_VERSION_3.0B		 SET 1
+PROTRACKER_VERSION_3.0B		SET 1
 
 
 	INCLUDE "macros.i"
@@ -68,9 +68,9 @@ PROTRACKER_VERSION_3.0B		 SET 1
 
 	INCLUDE "equals.i"
 
-requires_030_cpu	 	EQU FALSE
-requires_040_cpu	 	EQU FALSE
-requires_060_cpu	 	EQU FALSE
+requires_030_cpu		EQU FALSE
+requires_040_cpu		EQU FALSE
+requires_060_cpu		EQU FALSE
 requires_fast_memory		EQU FALSE
 requires_multiscan_monitor	EQU FALSE
 
@@ -88,21 +88,21 @@ pt_track_volumes_enabled	EQU TRUE
 pt_track_periods_enabled	EQU TRUE
 pt_music_fader_enabled		EQU TRUE
 pt_split_module_enabled		EQU TRUE
-pt_usedfx		 	EQU %1011110101111111
-pt_usedefx		 	EQU %0000000000000000
+pt_usedfx			EQU %1011110101111111
+pt_usedefx			EQU %0000000000000000
 
 vcs3111_bplam_table_length_256	EQU TRUE
 
 	IFEQ open_border_enabled
-dma_bits		 	EQU DMAF_SPRITE|DMAF_BLITTER|DMAF_COPPER|DMAF_MASTER|DMAF_SETCLR
+dma_bits			EQU DMAF_SPRITE|DMAF_BLITTER|DMAF_COPPER|DMAF_MASTER|DMAF_SETCLR
 	ELSE
-dma_bits		 	EQU DMAF_SPRITE|DMAF_BLITTER|DMAF_COPPER|DMAF_RASTER|DMAF_MASTER|DMAF_SETCLR
+dma_bits			EQU DMAF_SPRITE|DMAF_BLITTER|DMAF_COPPER|DMAF_RASTER|DMAF_MASTER|DMAF_SETCLR
 	ENDC
 
 	IFEQ pt_ciatiming_enabled
-intena_bits		 	EQU INTF_EXTER|INTF_INTEN|INTF_SETCLR
+intena_bits			EQU INTF_EXTER|INTF_INTEN|INTF_SETCLR
 	ELSE
-intena_bits		 	EQU INTF_VERTB|INTF_EXTER|INTF_INTEN|INTF_SETCLR
+intena_bits			EQU INTF_VERTB|INTF_EXTER|INTF_INTEN|INTF_SETCLR
 	ENDC
 
 ciaa_icr_bits			EQU CIAICRF_SETCLR
@@ -112,44 +112,44 @@ ciab_icr_bits			EQU CIAICRF_TA|CIAICRF_TB|CIAICRF_SETCLR
 ciab_icr_bits			EQU CIAICRF_TB|CIAICRF_SETCLR
 	ENDC
 
-copcon_bits		 	EQU 0
+copcon_bits			EQU 0
 
-pf1_x_size1		 	EQU 0
-pf1_y_size1		 	EQU 0
-pf1_depth1		 	EQU 0
-pf1_x_size2		 	EQU 0
-pf1_y_size2		 	EQU 0
-pf1_depth2		 	EQU 0
+pf1_x_size1			EQU 0
+pf1_y_size1			EQU 0
+pf1_depth1			EQU 0
+pf1_x_size2			EQU 0
+pf1_y_size2			EQU 0
+pf1_depth2			EQU 0
 	IFEQ open_border_enabled
-pf1_x_size3		 	EQU 0
-pf1_y_size3		 	EQU 0
-pf1_depth3		 	EQU 0
+pf1_x_size3			EQU 0
+pf1_y_size3			EQU 0
+pf1_depth3			EQU 0
 	ELSE
-pf1_x_size3		 	EQU 32
-pf1_y_size3		 	EQU 1
-pf1_depth3		 	EQU 1
+pf1_x_size3			EQU 32
+pf1_y_size3			EQU 1
+pf1_depth3			EQU 1
 	ENDC
 pf1_colors_number		EQU 0	; 256
 
-pf2_x_size1		 	EQU 0
-pf2_y_size1		 	EQU 0
-pf2_depth1		 	EQU 0
-pf2_x_size2		 	EQU 0
-pf2_y_size2		 	EQU 0
-pf2_depth2		 	EQU 0
-pf2_x_size3		 	EQU 0
-pf2_y_size3		 	EQU 0
-pf2_depth3		 	EQU 0
+pf2_x_size1			EQU 0
+pf2_y_size1			EQU 0
+pf2_depth1			EQU 0
+pf2_x_size2			EQU 0
+pf2_y_size2			EQU 0
+pf2_depth2			EQU 0
+pf2_x_size3			EQU 0
+pf2_y_size3			EQU 0
+pf2_depth3			EQU 0
 pf2_colors_number		EQU 0
 pf_colors_number		EQU pf1_colors_number+pf2_colors_number
-pf_depth		 	EQU pf1_depth3+pf2_depth3
+pf_depth			EQU pf1_depth3+pf2_depth3
 
 pf_extra_number			EQU 0
 
-spr_number		 	EQU 8
-spr_x_size1		 	EQU 32
-spr_x_size2		 	EQU 32
-spr_depth		 	EQU 2
+spr_number			EQU 8
+spr_x_size1			EQU 32
+spr_x_size2			EQU 32
+spr_depth			EQU 2
 spr_colors_number		EQU 0	; 4
 spr_odd_color_table_select	EQU 14	; Logo
 spr_even_color_table_select	EQU 1	; Scrolltext (9)
@@ -170,16 +170,16 @@ chip_memory_size		EQU 0
 ciab_cra_bits			EQU CIACRBF_LOAD
 	ENDC
 ciab_crb_bits			EQU CIACRBF_LOAD|CIACRBF_RUNMODE ; Oneshot mode
-ciaa_ta_time		 	EQU 0
-ciaa_tb_time		 	EQU 0
+ciaa_ta_time			EQU 0
+ciaa_tb_time			EQU 0
 	IFEQ pt_ciatiming_enabled
-ciab_ta_time		 	EQU 14187 ;= 0.709379 MHz * [20000 탎 = 50 Hz duration for one frame on a PAL machine]
-;ciab_ta_time		 	EQU 14318 ;= 0.715909 MHz * [20000 탎 = 50 Hz duration for one frame on a NTSC machine]
+ciab_ta_time			EQU 14187 ;= 0.709379 MHz * [20000 탎 = 50 Hz duration for one frame on a PAL machine]
+;ciab_ta_time			EQU 14318 ;= 0.715909 MHz * [20000 탎 = 50 Hz duration for one frame on a NTSC machine]
 	ELSE
-ciab_ta_time		 	EQU 0
+ciab_ta_time			EQU 0
 	ENDC
-ciab_tb_time		 	EQU 362 ;= 0.709379 MHz * [511.43 탎 = Lowest note period C1 with Tuning=-8 * 2 / PAL clock constant = 907*2/3546895 ticks per second]
-		 			;= 0.715909 MHz * [506.76 탎 = Lowest note period C1 with Tuning=-8 * 2 / NTSC clock constant = 907*2/3579545 ticks per second]
+ciab_tb_time			EQU 362 ;= 0.709379 MHz * [511.43 탎 = Lowest note period C1 with Tuning=-8 * 2 / PAL clock constant = 907*2/3546895 ticks per second]
+					;= 0.715909 MHz * [506.76 탎 = Lowest note period C1 with Tuning=-8 * 2 / NTSC clock constant = 907*2/3579545 ticks per second]
 ciaa_ta_continuous_enabled	EQU FALSE
 ciaa_tb_continuous_enabled	EQU FALSE
 	IFEQ pt_ciatiming_enabled
@@ -196,7 +196,7 @@ pixel_per_line			EQU 32
 	ENDC
 visible_pixels_number		EQU 352
 visible_lines_number		EQU 256
-MINROW		 		EQU VSTART_256_LINES
+MINROW				EQU VSTART_256_LINES
 
 	IFNE open_border_enabled 
 pf_pixel_per_datafetch		EQU 16	; 1x
@@ -215,39 +215,39 @@ pf1_plane_moduli		EQU -(pf1_plane_width-(pf1_plane_width-data_fetch_width))
 	ENDC
 
 	IFEQ open_border_enabled
-diwstrt_bits		 	EQU ((display_window_vstart&$ff)*DIWSTRTF_V0)|(display_window_hstart&$ff)
-diwstop_bits		 	EQU ((display_window_vstop&$ff)*DIWSTOPF_V0)|(display_window_hstop&$ff)
-bplcon0_bits		 	EQU BPLCON0F_ECSENA|((pf_depth>>3)*BPLCON0F_BPU3)|(BPLCON0F_COLOR)|((pf_depth&$07)*BPLCON0F_BPU0)
+diwstrt_bits			EQU ((display_window_vstart&$ff)*DIWSTRTF_V0)|(display_window_hstart&$ff)
+diwstop_bits			EQU ((display_window_vstop&$ff)*DIWSTOPF_V0)|(display_window_hstop&$ff)
+bplcon0_bits			EQU BPLCON0F_ECSENA|((pf_depth>>3)*BPLCON0F_BPU3)|(BPLCON0F_COLOR)|((pf_depth&$07)*BPLCON0F_BPU0)
 bplcon3_bits1			EQU BPLCON3F_SPRES0
 bplcon3_bits2			EQU bplcon3_bits1|BPLCON3F_LOCT
-bplcon4_bits		 	EQU (BPLCON4F_OSPRM4*spr_odd_color_table_select)|(BPLCON4F_ESPRM4*spr_even_color_table_select)
-diwhigh_bits		 	EQU (((display_window_hstop&$100)>>8)*DIWHIGHF_HSTOP8)|(((display_window_vstop&$700)>>8)*DIWHIGHF_VSTOP8)|(((display_window_hstart&$100)>>8)*DIWHIGHF_HSTART8)|((display_window_vstart&$700)>>8)
-fmode_bits		 	EQU FMODEF_SPR32
+bplcon4_bits			EQU (BPLCON4F_OSPRM4*spr_odd_color_table_select)|(BPLCON4F_ESPRM4*spr_even_color_table_select)
+diwhigh_bits			EQU (((display_window_hstop&$100)>>8)*DIWHIGHF_HSTOP8)|(((display_window_vstop&$700)>>8)*DIWHIGHF_VSTOP8)|(((display_window_hstart&$100)>>8)*DIWHIGHF_HSTART8)|((display_window_vstart&$700)>>8)
+fmode_bits			EQU FMODEF_SPR32
 	ELSE
-diwstrt_bits		 	EQU ((display_window_vstart&$ff)*DIWSTRTF_V0)|(display_window_hstart&$ff)
-diwstop_bits		 	EQU ((display_window_vstop&$ff)*DIWSTOPF_V0)|(display_window_hstop&$ff)
-ddfstrt_bits		 	EQU DDFSTART_OVERSCAN_32_PIXEL
-ddfstop_bits		 	EQU DDFSTOP_OVERSCAN_32_PIXEL_MIN
-bplcon0_bits		 	EQU BPLCON0F_ECSENA|((pf_depth>>3)*BPLCON0F_BPU3)|(BPLCON0F_COLOR)?((pf_depth&$07)*BPLCON0F_BPU0)
+diwstrt_bits			EQU ((display_window_vstart&$ff)*DIWSTRTF_V0)|(display_window_hstart&$ff)
+diwstop_bits			EQU ((display_window_vstop&$ff)*DIWSTOPF_V0)|(display_window_hstop&$ff)
+ddfstrt_bits			EQU DDFSTART_OVERSCAN_32_PIXEL
+ddfstop_bits			EQU DDFSTOP_OVERSCAN_32_PIXEL_MIN
+bplcon0_bits			EQU BPLCON0F_ECSENA|((pf_depth>>3)*BPLCON0F_BPU3)|(BPLCON0F_COLOR)?((pf_depth&$07)*BPLCON0F_BPU0)
 bplcon3_bits1			EQU BPLCON3F_SPRES0
 bplcon3_bits2			EQU bplcon3_bits1|BPLCON3F_LOCT
-bplcon4_bits		 	EQU (BPLCON4F_OSPRM4*spr_odd_color_table_select)|(BPLCON4F_ESPRM4*spr_even_color_table_select)
-diwhigh_bits		 	EQU (((display_window_hstop&$100)>>8)*DIWHIGHF_HSTOP8)|(((display_window_vstop&$700)>>8)*DIWHIGHF_VSTOP8)|(((display_window_hstart&$100)>>8)*DIWHIGHF_HSTART8)|((display_window_vstart&$700)>>8)
-fmode_bits		 	EQU FMODEF_SPR32
+bplcon4_bits			EQU (BPLCON4F_OSPRM4*spr_odd_color_table_select)|(BPLCON4F_ESPRM4*spr_even_color_table_select)
+diwhigh_bits			EQU (((display_window_hstop&$100)>>8)*DIWHIGHF_HSTOP8)|(((display_window_vstop&$700)>>8)*DIWHIGHF_VSTOP8)|(((display_window_hstart&$100)>>8)*DIWHIGHF_HSTART8)|((display_window_vstart&$700)>>8)
+fmode_bits			EQU FMODEF_SPR32
 	ENDC
-color00_bits		 	EQU $001122
+color00_bits			EQU $001122
 
 cl2_display_x_size		EQU 352
 cl2_display_width		EQU cl2_display_x_size/8
 cl2_display_y_size		EQU visible_lines_number
 	IFEQ open_border_enabled
-cl2_hstart1		 	EQU display_window_hstart-(1*CMOVE_SLOT_PERIOD)-4
+cl2_hstart1			EQU display_window_hstart-(1*CMOVE_SLOT_PERIOD)-4
 	ELSE
-cl2_hstart1		 	EQU display_window_hstart-4
+cl2_hstart1			EQU display_window_hstart-4
 	ENDC
-cl2_vstart1		 	EQU MINROW
-cl2_hstart2		 	EQU $00
-cl2_vstart2		 	EQU beam_position&$ff
+cl2_vstart1			EQU MINROW
+cl2_hstart2			EQU $00
+cl2_vstart2			EQU beam_position&$ff
 
 sine_table_length		EQU 256
 
@@ -1261,6 +1261,7 @@ VERTB_int_server
 	IFD PROTRACKER_VERSION_2.3A 
 		PT2_REPLAY pt_effects_handler
 	ENDC
+
 	IFD PROTRACKER_VERSION_3.0B
 		PT3_REPLAY pt_effects_handler
 	ENDC
@@ -1328,6 +1329,7 @@ sine_table
 	IFD PROTRACKER_VERSION_2.3A 
 		INCLUDE "music-tracker/pt2-period-table.i"
 	ENDC
+
 	IFD PROTRACKER_VERSION_3.0B
 		INCLUDE "music-tracker/pt3-period-table.i"
 	ENDC
@@ -1420,7 +1422,7 @@ vst_text
 	DC.B "MUSIC BY MA2E                 "
 
 	REPT vst_text_characters_number/((vst_origin_character_y_size+1)/vst_text_character_y_size)
-		  DC.B " "
+		DC.B " "
 	ENDR
 	DC.B FALSE
 	EVEN
