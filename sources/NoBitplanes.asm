@@ -833,7 +833,7 @@ vst_init_xy_coords
 	moveq	#display_window_vstart-vst_text_character_y_size,d1 ; Y-Koord.
 	move.w	#vst_object_y_size,d2
 	add.w	d1,d2			; VSTOP
-	move.l	spr_ptrs_construction+(2*LONGWORD_SIZE)(pc),a0 ; Sprite2-Struktur
+	move.l	spr_ptrs_construction+(QUADWORD_SIZE)(pc),a0 ; Sprite2-Struktur
 	SET_SPRITE_POSITION d0,d1,d2
 	move.w	d1,(a0)			; SPRxPOS
 	move.w	d2,spr_pixel_per_datafetch/8(a0) ; SPRxCTL
@@ -1056,7 +1056,7 @@ vert_scrolltext
 	movem.l a4-a5,-(a7)
 	tst.w	vst_enabled(a3)
 	bne.s	vert_scrolltext_quit
-	move.l	spr_ptrs_construction+(2*LONGWORD_SIZE)(pc),d3 ; Sprite2-Struktur
+	move.l	spr_ptrs_construction+(QUADWORD_SIZE)(pc),d3 ; Sprite2-Struktur
 	ADDF.L	(spr_pixel_per_datafetch/4),d3 ; Sprite-Header überspringen
 	move.w	#(vst_copy_blit_y_size*64)+(vst_copy_blit_x_size/16),d4 ; BLTSIZE
 	MOVEF.W vst_text_character_y_restart,d5
@@ -1295,7 +1295,7 @@ EXTER_int_server
 	rts
 
 	CNOP 0,4
-NMI_int_server
+nmi_int_server
 	rts
 
 
