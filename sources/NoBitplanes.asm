@@ -1,9 +1,3 @@
-; Programm:	NoBitplane
-; Autor:	Christian Gerbig
-; Datum:	02.06.2024
-; Version:	1.1 Beta
-
-
 ; Requirements
 ; CPU:		68020+
 ; Fast-Memory:	-
@@ -13,16 +7,18 @@
 
 ; History/Changes
 
-; V.1.0 Beta
-; - Erstes Release
+; V.1.0 beta
+; - first release
 
 ; V.1.1
-; - überarbeitete Includes integriert
-; - PT 8xy-Befehl:
-;   810 Start Blind-Fader-In
-;   820 Start Scrolltext
+; - revised include files included
 
-; Ausführungszeit 68020: 197 Rasterzeilen
+
+; PT 8xy command
+; 810	start Blind-Fader-In
+; 820	start Vert-Scrolltext
+
+; execution time 68020: 197 raster lines
 
 
 	SECTION code_and_variables,CODE
@@ -151,14 +147,15 @@ spr_x_size1			EQU 32
 spr_x_size2			EQU 32
 spr_depth			EQU 2
 spr_colors_number		EQU 0	; 4
-spr_odd_color_table_select	EQU 14	; Logo
-spr_even_color_table_select	EQU 1	; Scrolltext (9)
+spr_odd_color_table_select	EQU 14	; logo
+spr_even_color_table_select	EQU 1	; scroll text
 spr_used_number			EQU 1
 spr_swap_number			EQU 1
 
 	IFD PROTRACKER_VERSION_2.3A 
 audio_memory_size		EQU 0
 	ENDC
+
 	IFD PROTRACKER_VERSION_3.0B
 audio_memory_size		EQU 2
 	ENDC
@@ -169,7 +166,7 @@ chip_memory_size		EQU 0
 	IFEQ pt_ciatiming_enabled
 ciab_cra_bits			EQU CIACRBF_LOAD
 	ENDC
-ciab_crb_bits			EQU CIACRBF_LOAD|CIACRBF_RUNMODE ; Oneshot mode
+ciab_crb_bits			EQU CIACRBF_LOAD|CIACRBF_RUNMODE ; oneshot mode
 ciaa_ta_time			EQU 0
 ciaa_tb_time			EQU 0
 	IFEQ pt_ciatiming_enabled
@@ -189,7 +186,7 @@ ciab_ta_continuous_enabled	EQU FALSE
 	ENDC
 ciab_tb_continuous_enabled	EQU FALSE
 
-beam_position			EQU $133 ; Wegen Module-Fader
+beam_position			EQU $133
 
 	IFNE open_border_enabled 
 pixel_per_line			EQU 32
@@ -251,7 +248,7 @@ cl2_vstart2			EQU beam_position&$ff
 
 sine_table_length		EQU 256
 
-; **** Logo ****
+; Logo
 lg_image_x_size			EQU 32
 lg_image_plane_width		EQU lg_image_x_size/8
 lg_image_y_size			EQU 256
@@ -260,10 +257,10 @@ lg_image_depth			EQU 16
 lg_image_x_position		EQU display_window_hstart
 lg_image_y_position		EQU display_window_vstart
 
-; **** PT-Replay ****
-pt_fade_out_delay		EQU 1	; Tick
+; PT-Replay
+pt_fade_out_delay		EQU 1	; tick
 
-; **** Volume-Meter ****
+; Volume-Meter
 vm_source_chan1			EQU 2
 vm_source_chan2			EQU 3
 vm_source_chan3			EQU 3
@@ -271,7 +268,7 @@ vm_period_div			EQU 11
 vm_max_period_step		EQU 9
 vm_volume_div			EQU 6
 
-; **** Vert-Colorscroll 3.1.1.1 ****
+; Vert-Colorscroll 3.1.1.1
 vcs3111_bar_height		EQU 128
 vcs3111_bars_number		EQU 2
 vcs3111_step1			EQU 1
@@ -281,7 +278,7 @@ vcs3111_step2			EQU vcs3111_step2_max-vcs3111_step2_min
 vcs3111_step2_radius		EQU vcs3111_step2
 vcs3111_step2_center		EQU vcs3111_step2+vcs3111_step2_min
 
-; **** Vertical-Scrolltext ****
+; Vert-Scrolltext
 vst_used_sprites_number		EQU 1
 
 vst_image_x_size		EQU 320
@@ -315,7 +312,7 @@ vst_object_depth		EQU 2
 vst_copy_blit_x_size		EQU vst_text_character_x_size
 vst_copy_blit_y_size		EQU vst_text_character_y_size*vst_text_character_depth
 
-; **** Blind-Fader ****
+; Blind-Fader
 bf_lamella_height		EQU 16
 bf_lamellas_number		EQU visible_lines_number/bf_lamella_height
 bf_step1			EQU 1
@@ -426,7 +423,6 @@ cl2_end				RS.L 1
 copperlist2_size		RS.B 0
 
 
-; ** Konstanten für die Größe der Copperlisten **
 cl1_size1			EQU 0
 cl1_size2			EQU 0
 cl1_size3			EQU copperlist1_size
@@ -436,7 +432,7 @@ cl2_size2			EQU copperlist2_size
 cl2_size3			EQU copperlist2_size
 
 
-; ** Sprite0-Zusatzstruktur **
+; sprite0 additional structure
 	RSRESET
 
 spr0_extension1	RS.B 0
@@ -447,7 +443,7 @@ spr0_ext1_planedata		RS.L lg_image_y_size*(spr_pixel_per_datafetch/16)
 spr0_extension1_size		RS.B 0
 
 
-; ** Sprite0-Hauptstruktur **
+; sprite0 main structure
 	RSRESET
 
 spr0_begin			RS.B 0
@@ -458,7 +454,7 @@ spr0_end			RS.L 1*(spr_pixel_per_datafetch/16)
 
 sprite0_size			RS.B 0
 
-; ** Sprite1-Zusatzstruktur **
+; sprite1 additional structure
 	RSRESET
 
 spr1_extension1			RS.B 0
@@ -468,7 +464,7 @@ spr1_ext1_planedata		RS.L lg_image_y_size*(spr_pixel_per_datafetch/16)
 
 spr1_extension1_size		RS.B 0
 
-; ** Sprite1-Hauptstruktur **
+; sprite1 main structure
 	RSRESET
 
 spr1_begin			RS.B 0
@@ -479,7 +475,7 @@ spr1_end			RS.L 1*(spr_pixel_per_datafetch/16)
 
 sprite1_size			RS.B 0
 
-; ** Sprite2-Zusatzstruktur **
+; sprite2 additional structure
 	RSRESET
 
 spr2_extension1	RS.B 0
@@ -489,7 +485,7 @@ spr2_ext1_planedata		RS.L 1*(spr_pixel_per_datafetch/16)*vst_object_y_size
 
 spr2_extension1_size		RS.B 0
 
-; ** Sprite2-Hauptstruktur **
+; sprite2 main structure
 	RSRESET
 
 spr2_begin			RS.B 0
@@ -500,7 +496,7 @@ spr2_end			RS.L 1*(spr_pixel_per_datafetch/16)
 
 sprite2_size			RS.B 0
 
-; ** Sprite3-Hauptstruktur **
+; sprite3 main structure
 	RSRESET
 
 spr3_begin			RS.B 0
@@ -509,7 +505,7 @@ spr3_end			RS.L 1*(spr_pixel_per_datafetch/16)
 
 sprite3_size			RS.B 0
 
-; ** Sprite4-Hauptstruktur **
+; sprite4 main structure
 	RSRESET
 
 spr4_begin			RS.B 0
@@ -518,7 +514,7 @@ spr4_end			RS.L 1*(spr_pixel_per_datafetch/16)
 
 sprite4_size	RS.B 0
 
-; ** Sprite5-Hauptstruktur **
+; sprite5 main structure
 	RSRESET
 
 spr5_begin			RS.B 0
@@ -527,7 +523,7 @@ spr5_end			RS.L 1*(spr_pixel_per_datafetch/16)
 
 sprite5_size			RS.B 0
 
-; ** Sprite6-Hauptstruktur **
+; sprite6 main structure
 	RSRESET
 
 spr6_begin			RS.B 0
@@ -536,7 +532,7 @@ spr6_end			RS.L 1*(spr_pixel_per_datafetch/16)
 
 sprite6_size			RS.B 0
 
-; ** Sprite7-Hauptstruktur **
+; sprite7 main structure
 	RSRESET
 
 spr7_begin			RS.B 0
@@ -545,7 +541,6 @@ spr7_end			RS.L 1*(spr_pixel_per_datafetch/16)
 
 sprite7_size			RS.B 0
 
-; ** Konstanten für die Größe der Spritestrukturen **
 spr0_x_size1			EQU spr_x_size1
 spr0_y_size1			EQU sprite0_size/(spr_x_size1/8)
 spr1_x_size1			EQU spr_x_size1
@@ -587,50 +582,50 @@ spr7_y_size2			EQU sprite7_size/(spr_x_size2/8)
 
 save_a7				RS.L 1
 
-; **** PT-Replay ****
+; PT-Replay
 	IFD PROTRACKER_VERSION_2.3A 
 		INCLUDE "music-tracker/pt2-variables-offsets.i"
 	ENDC
+
 	IFD PROTRACKER_VERSION_3.0B
 		INCLUDE "music-tracker/pt3-variables-offsets.i"
 	ENDC
 
 pt_effects_handler_active	RS.W 1
 
-; **** Vert-Colorscroll 3.1.1.1 ****
+; Vert-Colorscroll 3.1.1.1
 vcs3111_bplam_table_start	RS.W 1
 vcs3111_step2_angle		RS.W 1
 
-; **** Vert-Scrolltext ****
+; Vert-Scrolltext
 	RS_ALIGN_LONGWORD
 vst_image			RS.L 1
 vst_enabled			RS.W 1
 vst_text_table_start		RS.W 1
 
-; **** Blind-Fader ****
+; Blind-Fader
 	IFEQ open_border_enabled
 bf_registers_table_start	RS.W 1
 
-; **** Blind-Fader-In ****
+; Blind-Fader-In
 bfi_active			RS.W 1
 
-; **** Blind-Fader-Out ****
+; Blind-Fader-Out
 bfo_active			RS.W 1
 	ENDC
 
-; **** Main ****
+; Main
 stop_fx_active			RS.W 1
 
 variables_size			RS.B 0
 
 
-; **** PT-Replay ****
+; PT-Replay
 	INCLUDE "music-tracker/pt-song.i"
 
-; ** Temporary channel structure **
 	INCLUDE "music-tracker/pt-temp-channel.i"
 
-; **** Volume-Meter ****
+
 	RSRESET
 
 audio_channel_info		RS.B 0
@@ -648,10 +643,11 @@ audio_channel_info_size		RS.B 0
 	CNOP 0,4
 init_main_variables
 
-; **** PT-Replay ****
+; PT-Replay
 	IFD PROTRACKER_VERSION_2.3A 
 		PT2_INIT_VARIABLES
 	ENDC
+
 	IFD PROTRACKER_VERSION_3.0B
 		PT3_INIT_VARIABLES
 	ENDC
@@ -659,12 +655,12 @@ init_main_variables
 	moveq	#TRUE,d0
 	move.w	d0,pt_effects_handler_active(a3)
 
-; **** Vert-Colorscroll 3.1.1.1 ****
+; Vert-Colorscroll 3.1.1.1
 	move.w	d0,vcs3111_bplam_table_start(a3)
 	moveq	#sine_table_length/4,d2
 	move.w	d2,vcs3111_step2_angle(a3)
 
-; **** Vert-Scrolltext ****
+; Vert-Scrolltext
 	lea	vst_image_data,a0
 	move.l	a0,vst_image(a3)
 	moveq	#FALSE,d1
@@ -672,18 +668,18 @@ init_main_variables
 	moveq	#0,d0
 	move.w	d0,vst_text_table_start(a3)
 
-; **** Blind-Fader ****
+; Blind-Fader
 	IFEQ open_border_enabled
 	move.w	d0,bf_registers_table_start(a3)
 
-; **** Blind-Fader-In ****
+; Blind-Fader-In
 	move.w	d1,bfi_active(a3)
 
-; **** Blind-Fader-Out ****
+; Blind-Fader-Out
 	move.w	d1,bfo_active(a3)
 	ENDC
 
-; **** Main ****
+; Main
 	move.w	d1,stop_fx_active(a3)
 	rts
 
@@ -707,7 +703,7 @@ init_main
 	bsr	init_first_copperlist
 	bra	init_second_copperlist
 
-; **** PT-Replay ****
+; PT-Replay
 	PT_DETECT_SYS_FREQUENCY
 
 	PT_INIT_REGISTERS
@@ -720,32 +716,32 @@ init_main
 		PT_INIT_FINETUNE_TABLE_STARTS
 	ENDC
 
-; **** Volume-Meter ****
+; Volume-Meter
 	CNOP 0,4
 vm_init_audio_channels_info
 	lea	vm_audio_channel1_info(pc),a0
 	moveq	#0,d0
-	move.w  d0,(a0)+	; Geschwindigkeit
-	move.w  d0,(a0)+	; Step2 Y-Winkel-Geschwindigkeit
-	move.w  d0,(a0)		; Step2 Y-Winkel-Schrittweite
+	move.w  d0,aci_speed(a0)
+	move.w  d0,aci_step2_anglespeed(a0)
+	move.w  d0,aci_step2_anglestep(a0)
 	lea	vm_audio_channel2_info(pc),a0
-	move.w  d0,(a0)+	; Geschwindigkeit
-	move.w  d0,(a0)+	; Step2 Y-Winkel-Geschwindigkeit
-	move.w  d0,(a0)		; Step2 Y-Winkel-Schrittweite
+	move.w  d0,aci_speed(a0)
+	move.w  d0,aci_step2_anglespeed(a0)
+	move.w  d0,aci_step2_anglestep(a0)
 	lea	vm_audio_channel3_info(pc),a0
-	move.w  d0,(a0)+	; Geschwindigkeit
-	move.w  d0,(a0)+	; Step2 Y-Winkel -Geschwindigkeit
-	move.w  d0,(a0)		; Step2 Y-Winkel-Schrittweite
+	move.w  d0,aci_speed(a0)
+	move.w  d0,aci_step2_anglespeed(a0)
+	move.w  d0,aci_step2_anglestep(a0)
 	lea	vm_audio_channel4_info(pc),a0
-	move.w  d0,(a0)+	; Geschwindigkeit
-	move.w  d0,(a0)+	; Step2 Y-Winkel-Geschwindigkeit
-	move.w  d0,(a0)		; Step2 Y-Winkel-Schrittweite
+	move.w  d0,aci_speed(a0)
+	move.w  d0,aci_step2_anglespeed(a0)
+	move.w  d0,aci_step2_anglestep(a0)
 	rts
 
-; **** Vert-Colorscroll ****
+; Vert-Colorscroll
 	INIT_bplam_table.B vcs3111,0,1,color_values_number1*segments_number1,extra_memory,a3
 
-; **** Vert-Scrolltext ****
+; Vert-Scrolltext
 	INIT_CHARACTERS_OFFSETS.W vst
 
 	INIT_CHARACTERS_Y_POSITIONS vst
@@ -798,45 +794,45 @@ init_sprites
 
 	INIT_SPRITE_POINTERS_TABLE
 
-; **** Logo ****
+; Logo
 	CNOP 0,4
 lg_init_sprites
-	move.w	#lg_image_x_position*4,d0 ; X-Pos.
+	move.w	#lg_image_x_position*SHIRES_PIXEL_FACTOR,d0 ; HSTART
 	moveq	#lg_image_y_position,d1	; VSTART
 	move.w	#lg_image_y_size,d2
 	add.w	d1,d2			; VSTOP
 	lea	spr_ptrs_construction(pc),a2
 	SET_SPRITE_POSITION d0,d1,d2
-	move.l	(a2)+,a0		; 1. Sprite-Struktur
-	move.w	d1,(a0)			; SPRxPOS
-	move.w	d2,spr_pixel_per_datafetch/8(a0) ; SPRxCTL
-	ADDF.W	(spr_pixel_per_datafetch/4),a0 ; Sprite-Header überspringen
-	move.l	(a2),a1			; 2. Sprite-Struktur
-	move.w	d1,(a1)			; SPRxPOS
+	move.l	(a2)+,a0		; first sprite structure
+	move.w	d1,(a0)			; SPRPOS
+	move.w	d2,spr_pixel_per_datafetch/8(a0) ; SPRCTL
+	ADDF.W	(spr_pixel_per_datafetch/4),a0 ; skip sprite header
+	move.l	(a2),a1			; second sprite structure
+	move.w	d1,(a1)			; SPRPOS
 	or.b	#SPRCTLF_ATT,d2
-	move.w	d2,spr_pixel_per_datafetch/8(a1) ; SPRxCTL
-	ADDF.W	(spr_pixel_per_datafetch/4),a1 ; Sprite-Header überspringen
-	lea	lg_image_data,a2	; Zeiger auf Grafikdaten
+	move.w	d2,spr_pixel_per_datafetch/8(a1) ; SPRCTL
+	ADDF.W	(spr_pixel_per_datafetch/4),a1 ; skip sprite header
+	lea	lg_image_data,a2
 	MOVEF.W lg_image_y_size-1,d7
 lg_init_sprites_loop
-	move.l	(a2)+,(a0)+		; Bitplane0 32 Pixel
-	move.l	(a2)+,(a0)+		; Bitplane1 32 Pixel
-	move.l	(a2)+,(a1)+		; Bitplane2 32 Pixel
-	move.l	(a2)+,(a1)+		; Bitplane3 32 Pixel
+	move.l	(a2)+,(a0)+		; bitplane1 32 pixel
+	move.l	(a2)+,(a0)+		; bitplane2 32 pixel
+	move.l	(a2)+,(a1)+		; bitplane3 32 pixel
+	move.l	(a2)+,(a1)+		; bitplane4 32 pixel
 	dbf	d7,lg_init_sprites_loop
 	rts
 
-; **** Vert-Scrolltext ****
+; Vert-Scrolltext
 	CNOP 0,4
 vst_init_xy_coords
-	move.w	#(display_window_hstop-vst_text_character_x_size)*4,d0 ; X-Koord.
-	moveq	#display_window_vstart-vst_text_character_y_size,d1 ; Y-Koord.
+	move.w	#(display_window_hstop-vst_text_character_x_size)*SHIRES_PIXEL_FACTOR,d0 ; HSTART
+	moveq	#display_window_vstart-vst_text_character_y_size,d1 ; VSTART
 	move.w	#vst_object_y_size,d2
 	add.w	d1,d2			; VSTOP
-	move.l	spr_ptrs_construction+(QUADWORD_SIZE)(pc),a0 ; Sprite2-Struktur
+	move.l	spr_ptrs_construction+(2*LONGWORD_SIZE)(pc),a0 ; sprite2 structure
 	SET_SPRITE_POSITION d0,d1,d2
-	move.w	d1,(a0)			; SPRxPOS
-	move.w	d2,spr_pixel_per_datafetch/8(a0) ; SPRxCTL
+	move.w	d1,(a0)			; SPRPOS
+	move.w	d2,spr_pixel_per_datafetch/8(a0) ; SPRCTL
 	rts
 
 	COPY_SPRITE_STRUCTURES
@@ -845,7 +841,7 @@ vst_init_xy_coords
 	CNOP 0,4
 init_CIA_timers
 
-; **** PT-Replay ****
+; PT-Replay
 	PT_INIT_TIMERS
 	rts
 
@@ -955,7 +951,7 @@ get_channel_amplitude
 ; a1	... Zeiger auf Kanalinfo-Struktur
 ; Result
 ; d0.l	... Kein Rückgabewert
-	tst.b	n_notetrigger(a0)	; Wurde neue Note angespielt ?
+	tst.b	n_notetrigger(a0)	; new note played ?
 	bne.s	get_channel_amplitude_quit
 	move.b	#FALSE,n_notetrigger(a0)
 	move.w	n_period(a0),d0
@@ -963,12 +959,12 @@ get_channel_amplitude
 	moveq	#vm_max_period_step,d0
 	sub.w	d1,d0			; maxperstep - perstep
 	lsr.w	#1,d0
-	move.w	d0,(a1)+		; Geschwindigkeit
+	move.w	d0,(a1)+		; speed
 	lsr.w	#1,d0
-	move.w	d0,(a1)+		; Schrittweite
+	move.w	d0,(a1)+		; step2 angle speed
 	move.w	n_currentvolume(a0),d0
 	DIVUF.W d3,d0,d1
-	move.w	d1,(a1)+
+	move.w	d1,(a1)+                ; step2 angle step
 get_channel_amplitude_quit
 	rts
 
@@ -982,70 +978,70 @@ vert_colorscroll3111
 	move.w	d2,d0		
 	move.w	vcs3111_step2_angle(a3),d4
 	IFEQ vcs3111_bplam_table_length_256
-		add.b (vm_audio_channel1_info+aci_speed+1,pc,d1.w*2),d0 ; Startwert der Switchtabelle erhöhen
+		add.b (vm_audio_channel1_info+aci_speed+1,pc,d1.w*2),d0 ; increase start value
 	ELSE
-		MOVEF.W vcs3111_bplam_table_size-1,d3 ; Anzahl der Einträge
-		add.w	(vm_audio_channel1_info+aci_speed,pc,d1.w*2),d0 ; Startwert der Switchtabelle erhöhen
-		and.w	d3,d0		; Überlauf entfernen
+		MOVEF.W vcs3111_bplam_table_size-1,d3 ; number of entries
+		add.w	(vm_audio_channel1_info+aci_speed,pc,d1.w*2),d0 ; increase start value
+		and.w	d3,d0		; remove overflow
 	ENDC
 	move.w	d0,vcs3111_bplam_table_start(a3) 
 	move.w	d4,d0		
 	moveq	#vm_source_chan2,d1
 	MULUF.W audio_channel_info_size/WORD_SIZE,d1,d6
-	add.b	(vm_audio_channel1_info+aci_step2_anglespeed+1,pc,d1.w*2),d0 ; nächster Y-Winkel
+	add.b	(vm_audio_channel1_info+aci_step2_anglespeed+1,pc,d1.w*2),d0 ; next y angle
 	move.w	d0,vcs3111_step2_angle(a3) 
 	MOVEF.L (cl2_extension1_size*(cl2_display_y_size/2))+4,d5
-	move.l	extra_memory(a3),a0 	; Tabelle mit Switchwerten
+	move.l	extra_memory(a3),a0 	; BPLCON4 switchvalues table
 	move.l	cl2_construction2(a3),a1 
-	ADDF.W	cl2_extension1_entry+cl2_ext1_BPLCON4_1+WORD_SIZE+(((cl2_display_width/2)-1)*LONGWORD_SIZE)+(((cl2_display_y_size/2)-1)*cl2_extension1_size),a1 ; Start in CL 2. Quadrant
-	lea	LONGWORD_SIZE(a1),a2 	; Start in CL 1. Quadrant
+	ADDF.W	cl2_extension1_entry+cl2_ext1_BPLCON4_1+WORD_SIZE+(((cl2_display_width/2)-1)*LONGWORD_SIZE)+(((cl2_display_y_size/2)-1)*cl2_extension1_size),a1 ; 2nd quadrant
+	lea	LONGWORD_SIZE(a1),a2 	; 1st quafrant
 	lea	sine_table(pc),a3	
-	lea	cl2_extension1_size(a1),a4 ; Start in CL 3. Quadrant
-	lea	cl2_extension1_size(a2),a5 ; Start in CL 4. Quadrant
+	lea	cl2_extension1_size(a1),a4 ; 3rd quadrant
+	lea	cl2_extension1_size(a2),a5 ; 4th quadrant
 	move.w	#cl2_extension1_size,a6
 	move.w	#(cl2_extension1_size*(cl2_display_y_size/2))-4,a7
 	moveq	#vm_source_chan3,d1
 	MULUF.W audio_channel_info_size/WORD_SIZE,d1,d6
 	move.w	(vm_audio_channel1_info+aci_step2_anglestep,pc,d1.w*2),d7
-	swap	d7			: Bits 16-31: Schrittweite
-	move.w	#(cl2_display_width/2)-1,d7 ; Bis 0-15: Anzahl der Spalten
+	swap	d7			: bits 16-31: angle step
+	move.w	#(cl2_display_width/2)-1,d7 ; bis 0-15: number of columns
 vert_colorscroll3111_loop1
-	swap	d7			; Schrittweite
-	move.w	d2,d1			; Startwert
+	swap	d7			; angle step
+	move.w	d2,d1			; start value
 	MOVEF.W (cl2_display_y_size/2)-1,d6
 vert_colorscroll3111_loop2
-	move.b	(a0,d1.w),d0		; Switchwert aus Tabelle
+	move.b	(a0,d1.w),d0		; switch value
 	move.b	d0,(a1)
-	sub.l	a6,a1			; 2. Quadrant vorletzte Zeile in CL
+	sub.l	a6,a1			; 2nd quadrant penultimate line in cl
 	move.b	d0,(a2)
-	sub.l	a6,a2			; 1. Quadrant vorletzte Zeile in CL
+	sub.l	a6,a2			; 1st quadrant penultimate line in cl
 	move.b	d0,(a4)
-	add.l	a6,a4			; 3. Quadrant nächste Zeile in CL
+	add.l	a6,a4			; 3rd qudarant next line in cl
 	move.b	d0,(a5)
 	IFEQ vcs3111_bplam_table_length_256
-		subq.b	#vcs3111_step1,d1 ; nächster Wert aus Tabelle
+		subq.b	#vcs3111_step1,d1 ; next switch value
 	ELSE
-		subq.w	#vcs3111_step1,d1 ; nächster Wert aus Tabelle
-		and.w	d3,d1		; Überlauf entfernen
+		subq.w	#vcs3111_step1,d1 ; next switch value
+		and.w	d3,d1		; remove overflow
 	ENDC
-	add.l	a6,a5			; 4. Quadrant nächste Zeile in CL
+	add.l	a6,a5			; 4th qudarant next line in cl
 	dbf	d6,vert_colorscroll3111_loop2
 	move.l	(a3,d4.w*4),d0		; sin(w)
 	MULUF.L vcs3111_step2_radius*2,d0 ; y'=(yr*sin(w))/2^15
-	add.b	d7,d4			; nächster Y-Winkel
+	add.b	d7,d4			; next y angle
 	swap	d0
-	add.w	#vcs3111_step2_center,d0 ; + Y-Mittelpunkt
+	add.w	#vcs3111_step2_center,d0 ; + y centre
 	IFEQ vcs3111_bplam_table_length_256
-		sub.b	d0,d2		; Startwert verringern
+		sub.b	d0,d2		; decrement start value
 	ELSE
-		sub.w	d0,d2		; Startwert verringern
-		and.w	d3,d2		; Überlauf entfernen
+		sub.w	d0,d2		; decrement start value
+		and.w	d3,d2		; remove overflow
 	ENDC
-	swap	d7			; Schleifenzähler
-	add.l	a7,a1			; 2. Quadrant vorletzte Spalte
-	add.l	d5,a2			; 1. Quadrant nächste Spalte
-	sub.l	d5,a4			; 3. Quadrant vorletzte Spalte
-	sub.l	a7,a5			; 4. Quadrant nächste Spalte
+	swap	d7			; loop counter
+	add.l	a7,a1			; 2nd quadrant penultimate column
+	add.l	d5,a2			; 1st quadrant next column
+	sub.l	d5,a4			; 3rd quadrant penultimate column
+	sub.l	a7,a5			; 4th quadrant next column
 	dbf	d7,vert_colorscroll3111_loop1
 	move.l	variables+save_a7(pc),a7
 	movem.l (a7)+,a3-a6
@@ -1056,8 +1052,8 @@ vert_scrolltext
 	movem.l a4-a5,-(a7)
 	tst.w	vst_enabled(a3)
 	bne.s	vert_scrolltext_quit
-	move.l	spr_ptrs_construction+(QUADWORD_SIZE)(pc),d3 ; Sprite2-Struktur
-	ADDF.L	(spr_pixel_per_datafetch/4),d3 ; Sprite-Header überspringen
+	move.l	spr_ptrs_construction+(2*LONGWORD_SIZE)(pc),d3 ; sprite2 structure
+	ADDF.L	(spr_pixel_per_datafetch/4),d3 ; skip sprite header
 	move.w	#(vst_copy_blit_y_size*64)+(vst_copy_blit_x_size/16),d4 ; BLTSIZE
 	MOVEF.W vst_text_character_y_restart,d5
 	lea	vst_characters_y_positions(pc),a0
@@ -1069,23 +1065,23 @@ vert_scrolltext
 	moveq	#vst_text_characters_number-1,d7
 vert_scrolltext_loop
 	moveq	#0,d0
-	move.w	(a0),d0			; Y-Position
-	move.w	d0,d2			; Y retten
+	move.w	(a0),d0			; y
+	move.w	d0,d2
 	MULUF.L vst_object_width*vst_object_depth,d0
-	add.l	d3,d0			; Y-Offset
+	add.l	d3,d0			; + y offset
 	WAITBLIT
-	move.l	(a1)+,(a2)		; Char
-	move.l	d0,(a4)			; Sprite0-Struktur
-	move.w	d4,(a5)			; Blitter starten
+	move.l	(a1)+,(a2)		; character image
+	move.l	d0,(a4)			; sprite0 structure
+	move.w	d4,(a5)			; start blit
 	subq.w	#vst_vert_scroll_speed,d2
 	bpl.s	vert_scrolltext_skip
 	move.l	a0,-(a7)
 	bsr.s	vst_get_new_character_image
 	move.l	(a7)+,a0
-	move.l	d0,-4(a1)		; Character-Image
-	add.w	d5,d2			; Y-Pos Neustart
+	move.l	d0,-4(a1)		; character image
+	add.w	d5,d2			; restart y position
 vert_scrolltext_skip
-	move.w	d2,(a0)+		; Y-Pos
+	move.w	d2,(a0)+		; y position
 	dbf	d7,vert_scrolltext_loop
 	move.w	#DMAF_BLITHOG,DMACON-DMACONR(a6)
 vert_scrolltext_quit
@@ -1095,10 +1091,10 @@ vert_scrolltext_quit
 vert_scrolltext_init
 	move.w	#DMAF_BLITHOG+DMAF_SETCLR,DMACON-DMACONR(a6)
 	WAITBLIT
-	move.l	#(BC0F_SRCA+BC0F_DEST+ANBNC+ANBC+ABNC+ABC)<<16,BLTCON0-DMACONR(a6) ; Minterm D=A
+	move.l	#(BC0F_SRCA+BC0F_DEST+ANBNC+ANBC+ABNC+ABC)<<16,BLTCON0-DMACONR(a6) ; minterm D=A
 	moveq	#FALSE,d0
-	move.l	d0,BLTAFWM-DMACONR(a6)	; Ausmaskierung
-	move.l	#((vst_image_plane_width-vst_text_character_width)<<16)+((vst_object_width-vst_text_character_width)+(spr_x_size2/8)),BLTAMOD-DMACONR(a6) ; A-Mod + D-Mod
+	move.l	d0,BLTAFWM-DMACONR(a6)	; no mask
+	move.l	#((vst_image_plane_width-vst_text_character_width)<<16)+((vst_object_width-vst_text_character_width)+(spr_x_size2/8)),BLTAMOD-DMACONR(a6) ; A&D moduli
 	rts
 
 	GET_NEW_CHARACTER_IMAGE.W vst
@@ -1110,10 +1106,10 @@ blind_fader_in
 		move.l	a4,-(a7)
 		tst.w	bfi_active(a3)
 		bne.s	blind_fader_in_quit
-		move.w	bf_registers_table_start(a3),d2 ; Registeradresse
+		move.w	bf_registers_table_start(a3),d2
 		move.w	d2,d0
-		addq.w	#bf_speed,d0	; Startwert der Tabelle erhöhen
-		cmp.w	#bf_registers_table_length/2,d0 ; Ende der Tabelle ?
+		addq.w	#bf_speed,d0	; next entry
+		cmp.w	#bf_registers_table_length/2,d0 ; end of table ?
 		ble.s	blind_fader_in_skip1
 		move.w	#FALSE,bfi_active(a3)
 blind_fader_in_skip1
@@ -1121,7 +1117,7 @@ blind_fader_in_skip1
 		MOVEF.W bf_registers_table_length,d3
 		MOVEF.W cl2_extension1_size,d4
 		moveq	#bf_step2,d5
-		lea	bf_registers_table(pc),a0 ;Tabelle mit Registeradressen
+		lea	bf_registers_table(pc),a0
 		IFNE cl2_size1
 			move.l	cl2_construction1(a3),a1
 			ADDF.W	cl2_extension1_entry+cl2_ext1_BPL1DAT,a1
@@ -1134,30 +1130,30 @@ blind_fader_in_skip1
 		ADDF.W	cl2_extension1_entry+cl2_ext1_BPL1DAT,a4
 		moveq	#bf_lamellas_number-1,d7
 blind_fader_in_loop1
-		move.w	d2,d1		; Startwert
+		move.w	d2,d1		; start value
 		moveq	#bf_lamella_height-1,d6
 blind_fader_in_loop2
-		move.w	(a0,d1.w*2),d0	; Registeradresse aus Tabelle lesen
+		move.w	(a0,d1.w*2),d0	; register address
 		IFNE cl2_size1
-			move.w	d0,(a1)	; Adresse in CL schreiben
-			add.l	d4,a1	; nächste Zeile in CL
+			move.w	d0,(a1)
+			add.l	d4,a1	; next line in cl
 		ENDC
 		IFNE cl2_size2
-			move.w	d0,(a2)	; Adresse in CL schreiben
-			add.l	d4,a2	; nächste Zeile in CL
+			move.w	d0,(a2)
+			add.l	d4,a2	; next line in cl
 		ENDC
-		move.w	d0,(a4)		; Adresse in CL schreiben
-		addq.w	#bf_step1,d1	; nächster Eintrag in Tabelle
-		add.l	d4,a4		; nächste Zeile in CL
-		cmp.w	d3,d1		; Ende erreicht ?
+		move.w	d0,(a4)
+		addq.w	#bf_step1,d1	; next entry
+		add.l	d4,a4		; next line in cl
+		cmp.w	d3,d1		; end of table ?
 		blt.s	blind_fader_in_skip2
-		sub.w	d3,d1		; Neustart
+		sub.w	d3,d1		; restart start value
 blind_fader_in_skip2
 		dbf	d6,blind_fader_in_loop2
-		add.w	d5,d2		; Startwert erhöhen
-		cmp.w	d3,d2		; Ende erreicht ?
+		add.w	d5,d2		; next entry
+		cmp.w	d3,d2		; end of table ?
 		blt.s	blind_fader_in_skip3
-		sub.w	d3,d2		; Neustart
+		sub.w	d3,d2		; restart start value
 blind_fader_in_skip3
 		dbf	d7,blind_fader_in_loop1
 blind_fader_in_quit
@@ -1171,7 +1167,7 @@ blind_fader_out
 		bne.s	blind_fader_out_quit
 		move.w	bf_registers_table_start(a3),d2
 		move.w	d2,d0
-		subq.w	#bf_speed,d0	; Startwert der Tabelle verringern
+		subq.w	#bf_speed,d0	; next entry
 		bpl.s	blind_fader_out_skip1
 		move.w	#FALSE,bfo_active(a3)
 blind_fader_out_skip1
@@ -1179,7 +1175,7 @@ blind_fader_out_skip1
 		MOVEF.W bf_registers_table_length,d3
 		MOVEF.W cl2_extension1_size,d4
 		moveq	#bf_step2,d5
-		lea	bf_registers_table(pc),a0 ; Tabelle mit Registeradressen
+		lea	bf_registers_table(pc),a0
 		IFNE cl2_size1
 			move.l	cl2_construction1(a3),a1
 			ADDF.W	cl2_extension1_entry+cl2_ext1_BPL1DAT,a1
@@ -1192,30 +1188,30 @@ blind_fader_out_skip1
 		ADDF.W	cl2_extension1_entry+cl2_ext1_BPL1DAT,a4
 		moveq	#bf_lamellas_number-1,d7
 blind_fader_out_loop1
-		move.w	d2,d1		; Startwert
+		move.w	d2,d1		; start value
 		moveq	#bf_lamella_height-1,d6
 blind_fader_out_loop2
-		move.w	(a0,d1.w*2),d0	;Registeradresse aus Tabelle lesen
+		move.w	(a0,d1.w*2),d0	; register address
 		IFNE cl2_size1
-			move.w	d0,(a1)	; Adresse in CL schreiben
-			add.l	d4,a1	; nächste Zeile in CL
+			move.w	d0,(a1)
+			add.l	d4,a1	; next line in cl
 		ENDC
 		IFNE cl2_size2
-			move.w	d0,(a2)	; Adresse in CL schreiben
-			add.l	d4,a2	; nächste Zeile in CL
+			move.w	d0,(a2)
+			add.l	d4,a2	; next line in cl
 		ENDC
-		move.w	d0,(a4)		; Adresse in CL schreiben
-		addq.w	#bf_step1,d1	; nächster Eintrag in Tabelle
-		add.l	d4,a4		; nächste Zeile in 3. CL
-		cmp.w	d3,d1		; Ende erreicht ?
+		move.w	d0,(a4)
+		addq.w	#bf_step1,d1	; next entry
+		add.l	d4,a4		; next line in cl
+		cmp.w	d3,d1		; end of table ?
 		blt.s	blind_fader_out_skip2
-		sub.w	d3,d1		; Neustart
+		sub.w	d3,d1		; restart start value
 blind_fader_out_skip2
 		dbf	d6,blind_fader_out_loop2
-		add.w	d5,d2		; Startwert erhöhen
-		cmp.w	d3,d2		; Ende erreicht ?
+		add.w	d5,d2		; next entry
+		cmp.w	d3,d2		; end of table ?
 		blt.s	blind_fader_out_skip3
-		sub.w	d3,d2		; Neustart
+		sub.w	d3,d2		; restart start value
 blind_fader_out_skip3
 		dbf	d7,blind_fader_out_loop1
 blind_fader_out_quit
@@ -1226,7 +1222,7 @@ blind_fader_out_quit
 
 	CNOP 0,4
 mouse_handler
-	btst	#CIAB_GAMEPORT0,CIAPRA(a4) ; Linke Maustaste gedrückt ?
+	btst	#CIAB_GAMEPORT0,CIAPRA(a4) ; left mouse button pressed ?
 	beq.s	mh_exit_demo
 	rts
 	CNOP 0,4
@@ -1249,7 +1245,7 @@ ciab_ta_int_server
 VERTB_int_server
 	ENDC
 
-; **** PT-Replay ****
+; PT-Replay
 	IFEQ pt_music_fader_enabled
 		bsr.s	pt_music_fader
 		bra.s	pt_PlayMusic
@@ -1321,7 +1317,7 @@ spr_ptrs_display
 sine_table
 	INCLUDE "sine-table-256x32.i"
 
-; **** PT-Replay ****
+; PT-Replay
 	INCLUDE "music-tracker/pt-invert-table.i"
 
 	INCLUDE "music-tracker/pt-vibrato-tremolo-table.i"
@@ -1340,7 +1336,7 @@ sine_table
 
 	INCLUDE "music-tracker/pt-finetune-starts-table.i"
 
-; **** Volume-Meter ****
+; Volume-Meter
 	CNOP 0,2
 vm_audio_channel1_info
 	DS.B audio_channel_info_size
@@ -1357,7 +1353,7 @@ vm_audio_channel3_info
 vm_audio_channel4_info
 	DS.B audio_channel_info_size
 
-; **** Vertical-Scrolltext ****
+; Vert-Scrolltext
 vst_ascii
 	DC.B "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.!?-'():\/#* "
 vst_ascii_end
@@ -1375,9 +1371,8 @@ vst_characters_y_positions
 vst_characters_image_ptrs
 	DS.L vst_text_characters_number
 
-; **** Blind-Fader ****
+; Blind-Fader
 	IFEQ open_border_enabled
-; ** Tabelle mit Registeradressen **
 		CNOP 0,2
 bf_registers_table
 		REPT bf_registers_table_length/2
@@ -1397,7 +1392,7 @@ bf_registers_table
 
 	INCLUDE "error-texts.i"
 
-; **** Vertical-Scrolltext ****
+; Vert-Scrolltext
 vst_text
 	REPT vst_text_characters_number/((vst_origin_character_y_size+1)/vst_text_character_y_size)
 		DC.B " "
@@ -1428,31 +1423,35 @@ vst_text
 	EVEN
 
 
-	DC.B "$VER: RSE-NoBitplanes 1.1 beta (2.6.24)",0
+	DC.B "$VER: "
+	DC.B "RSE-NoBitplanes "
+	DC.B "1.1 beta "
+	DC.B "(2.6.24) "
+	DC.B "© 2024 by Resistance",0
 	EVEN
 
 
-; ## Audiodaten nachladen ##
+; audio data
 
-; **** PT-Replay ****
+; PT-Replay
 	IFEQ pt_split_module_enabled
 pt_auddata SECTION pt_audio,DATA
 		INCBIN "Daten:Asm-Sources.AGA/projects/NoBitplanes/modules/MOD.end_of_2021.song"
 pt_audsmps SECTION pt_audio2,DATA_C
-	INCBIN "Daten:Asm-Sources.AGA/projects/NoBitplanes/modules/MOD.end_of_2021.smps"
+		INCBIN "Daten:Asm-Sources.AGA/projects/NoBitplanes/modules/MOD.end_of_2021.smps"
 	ELSE
 pt_auddata SECTION pt_audio,DATA_C
 		INCBIN "Daten:Asm-Sources.AGA/projects/NoBitplanes/modules/mod.end_of_2021"
 	ENDC
 
 
-; ## Grafikdaten nachladen ##
+; graphics data
 
-; **** Logo ****
+; Logo
 lg_image_data SECTION lg_gfx,DATA
 	INCBIN "Daten:Asm-Sources.AGA/projects/NoBitplanes/graphics/32x256x16-Resistance.rawblit"
 
-; **** Vertical-Scrolltext ****
+; Vert-Scrolltext
 vst_image_data SECTION vst_gfx,DATA_C
 	INCBIN "Daten:Asm-Sources.AGA/projects/NoBitplanes/fonts/16x15x2-Font.rawblit"
 	DS.B vst_image_plane_width*vst_image_depth ;Leerzeile
