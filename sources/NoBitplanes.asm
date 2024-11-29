@@ -80,6 +80,7 @@ pt_ciatiming_enabled		EQU TRUE
 pt_finetune_enabled		EQU FALSE
 pt_metronome_enabled		EQU FALSE
 pt_mute_enabled			EQU FALSE
+pt_track_notes_played_enabled	EQU TRUE
 pt_track_volumes_enabled	EQU TRUE
 pt_track_periods_enabled	EQU TRUE
 pt_music_fader_enabled		EQU TRUE
@@ -954,7 +955,7 @@ get_channel_amplitude
 	tst.b	n_notetrigger(a0)	; new note played ?
 	bne.s	get_channel_amplitude_quit
 	move.b	#FALSE,n_notetrigger(a0)
-	move.w	n_period(a0),d0
+	move.w	n_currentperiod(a0),d0
 	DIVUF.W d2,d0,d1
 	moveq	#vm_max_period_step,d0
 	sub.w	d1,d0			; maxperstep - perstep
