@@ -740,7 +740,7 @@ vm_init_audio_channels_info
 	rts
 
 ; Vert-Colorscroll
-	INIT_bplam_table.B vcs3111,0,1,color_values_number1*segments_number1,extra_memory,a3
+	INIT_BPLAM_TABLE.B vcs3111,0,1,color_values_number1*segments_number1,extra_memory,a3
 
 ; Vert-Scrolltext
 	INIT_CHARACTERS_OFFSETS.W vst
@@ -992,7 +992,7 @@ vert_colorscroll3111
 	add.b	(vm_audio_channel1_info+aci_step2_anglespeed+1,pc,d1.w*2),d0 ; next y angle
 	move.w	d0,vcs3111_step2_angle(a3) 
 	MOVEF.L (cl2_extension1_size*(cl2_display_y_size/2))+4,d5
-	move.l	extra_memory(a3),a0 	; BPLCON4 switchvalues table
+	move.l	extra_memory(a3),a0 	; bplam table
 	move.l	cl2_construction2(a3),a1 
 	ADDF.W	cl2_extension1_entry+cl2_ext1_BPLCON4_1+WORD_SIZE+(((cl2_display_width/2)-1)*LONGWORD_SIZE)+(((cl2_display_y_size/2)-1)*cl2_extension1_size),a1 ; 2nd quadrant
 	lea	LONGWORD_SIZE(a1),a2 	; 1st quafrant
@@ -1011,18 +1011,18 @@ vert_colorscroll3111_loop1
 	move.w	d2,d1			; start value
 	MOVEF.W (cl2_display_y_size/2)-1,d6
 vert_colorscroll3111_loop2
-	move.b	(a0,d1.w),d0		; switch value
-	move.b	d0,(a1)
+	move.b	(a0,d1.w),d0		; BPLAM value
+	move.b	d0,(a1)			; BPLCON4 high
 	sub.l	a6,a1			; 2nd quadrant penultimate line in cl
-	move.b	d0,(a2)
+	move.b	d0,(a2)			; BPLCON4 high
 	sub.l	a6,a2			; 1st quadrant penultimate line in cl
-	move.b	d0,(a4)
+	move.b	d0,(a4)			; BPLCON4 high
 	add.l	a6,a4			; 3rd qudarant next line in cl
-	move.b	d0,(a5)
+	move.b	d0,(a5)			; BPLCON4 high
 	IFEQ vcs3111_bplam_table_length_256
-		subq.b	#vcs3111_step1,d1 ; next switch value
+		subq.b	#vcs3111_step1,d1 ; next BPLAM value
 	ELSE
-		subq.w	#vcs3111_step1,d1 ; next switch value
+		subq.w	#vcs3111_step1,d1 ; next BPLAM value
 		and.w	d3,d1		; remove overflow
 	ENDC
 	add.l	a6,a5			; 4th qudarant next line in cl
