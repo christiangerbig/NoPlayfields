@@ -56,7 +56,7 @@
 	INCDIR "Daten:Asm-Sources.AGA/custom-includes/"
 
 
-PROTRACKER_VERSION_3.0B		SET 1
+PROTRACKER_VERSION_3		SET 1
 
 
 	INCLUDE "macros.i"
@@ -83,6 +83,7 @@ pt_mute_enabled			EQU FALSE
 pt_track_notes_played_enabled	EQU TRUE
 pt_track_volumes_enabled	EQU TRUE
 pt_track_periods_enabled	EQU TRUE
+pt_track_data_enabled		EQU FALSE
 pt_music_fader_enabled		EQU TRUE
 pt_split_module_enabled		EQU TRUE
 pt_usedfx			EQU %1011110101111111
@@ -153,11 +154,11 @@ spr_even_color_table_select	EQU 1	; scroll text
 spr_used_number			EQU 1
 spr_swap_number			EQU 1
 
-	IFD PROTRACKER_VERSION_2.3A 
+	IFD PROTRACKER_VERSION_2 
 audio_memory_size		EQU 0
 	ENDC
 
-	IFD PROTRACKER_VERSION_3.0B
+	IFD PROTRACKER_VERSION_3
 audio_memory_size		EQU 2
 	ENDC
 
@@ -584,11 +585,11 @@ spr7_y_size2			EQU sprite7_size/(spr_x_size2/8)
 save_a7				RS.L 1
 
 ; PT-Replay
-	IFD PROTRACKER_VERSION_2.3A 
+	IFD PROTRACKER_VERSION_2 
 		INCLUDE "music-tracker/pt2-variables-offsets.i"
 	ENDC
 
-	IFD PROTRACKER_VERSION_3.0B
+	IFD PROTRACKER_VERSION_3
 		INCLUDE "music-tracker/pt3-variables-offsets.i"
 	ENDC
 
@@ -645,11 +646,11 @@ audio_channel_info_size		RS.B 0
 init_main_variables
 
 ; PT-Replay
-	IFD PROTRACKER_VERSION_2.3A 
+	IFD PROTRACKER_VERSION_2 
 		PT2_INIT_VARIABLES
 	ENDC
 
-	IFD PROTRACKER_VERSION_3.0B
+	IFD PROTRACKER_VERSION_3
 		PT3_INIT_VARIABLES
 	ENDC
 
@@ -1255,11 +1256,11 @@ VERTB_int_server
 		CNOP 0,4
 	ENDC
 
-	IFD PROTRACKER_VERSION_2.3A 
+	IFD PROTRACKER_VERSION_2 
 		PT2_REPLAY pt_effects_handler
 	ENDC
 
-	IFD PROTRACKER_VERSION_3.0B
+	IFD PROTRACKER_VERSION_3
 		PT3_REPLAY pt_effects_handler
 	ENDC
 
@@ -1323,11 +1324,11 @@ sine_table
 
 	INCLUDE "music-tracker/pt-vibrato-tremolo-table.i"
 
-	IFD PROTRACKER_VERSION_2.3A 
+	IFD PROTRACKER_VERSION_2 
 		INCLUDE "music-tracker/pt2-period-table.i"
 	ENDC
 
-	IFD PROTRACKER_VERSION_3.0B
+	IFD PROTRACKER_VERSION_3
 		INCLUDE "music-tracker/pt3-period-table.i"
 	ENDC
 
