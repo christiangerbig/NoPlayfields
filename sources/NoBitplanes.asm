@@ -77,7 +77,6 @@ text_output_enabled		EQU FALSE
 open_border_enabled		EQU TRUE
 
 pt_ciatiming_enabled		EQU TRUE
-pt_finetune_enabled		EQU FALSE
 pt_metronome_enabled		EQU FALSE
 pt_mute_enabled			EQU FALSE
 pt_track_notes_played_enabled	EQU TRUE
@@ -691,9 +690,7 @@ init_main
 	bsr.s	pt_InitRegisters
 	bsr	pt_InitAudTempStrucs
 	bsr	pt_ExamineSongStruc
-	IFEQ pt_finetune_enabled
-		bsr	pt_InitFtuPeriodTableStarts
-	ENDC
+	bsr	pt_InitFtuPeriodTableStarts
 	bsr	vm_init_audio_channels_info
 	bsr	vcs3111_init_bplam_table
 	bsr	vst_init_characters_offsets
@@ -714,9 +711,7 @@ init_main
 
 	PT_EXAMINE_SONG_STRUCTURE
 
-	IFEQ pt_finetune_enabled
-		PT_INIT_FINETUNE_TABLE_STARTS
-	ENDC
+	PT_INIT_FINETUNE_TABLE_STARTS
 
 ; Volume-Meter
 	CNOP 0,4
