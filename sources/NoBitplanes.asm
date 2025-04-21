@@ -1,6 +1,5 @@
 ; Requirements
 ; CPU:		68020+
-; Fast-Memory:	-
 ; Chipset:	AGA PAL
 ; OS:		3.0+
 
@@ -10,7 +9,7 @@
 ; V.1.0 beta
 ; - first release
 
-; V.1.1
+; V.1.1 beta
 ; - revised include files included
 
 
@@ -18,10 +17,8 @@
 ; 810	start Blind-Fader-In
 ; 820	start Vert-Scrolltext
 
-; execution time 68020: 197 raster lines
+; Execution time 68020: 197 raster lines
 
-
-	SECTION code_and_variables,CODE
 
 	MC68040
 
@@ -77,17 +74,23 @@ text_output_enabled		EQU FALSE
 open_border_enabled		EQU TRUE
 
 pt_ciatiming_enabled		EQU TRUE
-pt_metronome_enabled		EQU FALSE
+pt_usedfx			EQU %1011110101111111
+pt_usedefx			EQU %0000000000000000
 pt_mute_enabled			EQU FALSE
+pt_music_fader_enabled		EQU TRUE
+pt_fade_out_delay		EQU 1 ; tick
+pt_split_module_enabled		EQU TRUE
 pt_track_notes_played_enabled	EQU TRUE
 pt_track_volumes_enabled	EQU TRUE
 pt_track_periods_enabled	EQU TRUE
 pt_track_data_enabled		EQU FALSE
-pt_music_fader_enabled		EQU TRUE
-pt_split_module_enabled		EQU TRUE
-pt_usedfx			EQU %1011110101111111
-pt_usedefx			EQU %0000000000000000
+	IFD PROTRACKER_VERSION_3
+pt_metronome_enabled		EQU FALSE
+pt_metrochanbits		EQU pt_metrochan1
+pt_metrospeedbits		EQU pt_metrospeed4th
+	ENDC
 
+; Vert-Colorscroll 3.1.1.1
 vcs3111_bplam_table_length_256	EQU TRUE
 
 	IFEQ open_border_enabled
@@ -158,7 +161,7 @@ audio_memory_size		EQU 0
 	ENDC
 
 	IFD PROTRACKER_VERSION_3
-audio_memory_size		EQU 2
+audio_memory_size		EQU 1*WORD_SIZE
 	ENDC
 
 disk_memory_size		EQU 0
@@ -258,9 +261,6 @@ lg_image_depth			EQU 16
 lg_image_x_position		EQU display_window_hstart
 lg_image_y_position		EQU display_window_vstart
 
-; PT-Replay
-pt_fade_out_delay		EQU 1	; tick
-
 ; Volume-Meter
 vm_source_chan1			EQU 2
 vm_source_chan2			EQU 3
@@ -341,6 +341,22 @@ extra_memory_size		EQU vcs3111_bplam_table_size*BYTE_SIZE
 
 
 	INCLUDE "sprite-attributes.i"
+
+
+; PT-Replay
+	INCLUDE "music-tracker/pt-song.i"
+
+	INCLUDE "music-tracker/pt-temp-channel.i"
+
+	RSRESET
+
+audio_channel_info		RS.B 0
+
+aci_speed			RS.W 1
+aci_step2_anglespeed		RS.W 1
+aci_step2_anglestep		RS.W 1
+
+audio_channel_info_size		RS.B 0
 
 
 	RSRESET
@@ -433,7 +449,7 @@ cl2_size2			EQU copperlist2_size
 cl2_size3			EQU copperlist2_size
 
 
-; sprite0 additional structure
+; Sprite0 additional structure
 	RSRESET
 
 spr0_extension1	RS.B 0
@@ -444,7 +460,7 @@ spr0_ext1_planedata		RS.L lg_image_y_size*(spr_pixel_per_datafetch/16)
 spr0_extension1_size		RS.B 0
 
 
-; sprite0 main structure
+; Sprite0 main structure
 	RSRESET
 
 spr0_begin			RS.B 0
@@ -455,7 +471,7 @@ spr0_end			RS.L 1*(spr_pixel_per_datafetch/16)
 
 sprite0_size			RS.B 0
 
-; sprite1 additional structure
+; Sprite1 additional structure
 	RSRESET
 
 spr1_extension1			RS.B 0
@@ -465,7 +481,7 @@ spr1_ext1_planedata		RS.L lg_image_y_size*(spr_pixel_per_datafetch/16)
 
 spr1_extension1_size		RS.B 0
 
-; sprite1 main structure
+; Sprite1 main structure
 	RSRESET
 
 spr1_begin			RS.B 0
@@ -476,7 +492,7 @@ spr1_end			RS.L 1*(spr_pixel_per_datafetch/16)
 
 sprite1_size			RS.B 0
 
-; sprite2 additional structure
+; Sprite2 additional structure
 	RSRESET
 
 spr2_extension1	RS.B 0
@@ -486,7 +502,7 @@ spr2_ext1_planedata		RS.L 1*(spr_pixel_per_datafetch/16)*vst_object_y_size
 
 spr2_extension1_size		RS.B 0
 
-; sprite2 main structure
+; Sprite2 main structure
 	RSRESET
 
 spr2_begin			RS.B 0
@@ -497,7 +513,7 @@ spr2_end			RS.L 1*(spr_pixel_per_datafetch/16)
 
 sprite2_size			RS.B 0
 
-; sprite3 main structure
+; Sprite3 main structure
 	RSRESET
 
 spr3_begin			RS.B 0
@@ -506,7 +522,7 @@ spr3_end			RS.L 1*(spr_pixel_per_datafetch/16)
 
 sprite3_size			RS.B 0
 
-; sprite4 main structure
+; Sprite4 main structure
 	RSRESET
 
 spr4_begin			RS.B 0
@@ -515,7 +531,7 @@ spr4_end			RS.L 1*(spr_pixel_per_datafetch/16)
 
 sprite4_size	RS.B 0
 
-; sprite5 main structure
+; Sprite5 main structure
 	RSRESET
 
 spr5_begin			RS.B 0
@@ -524,7 +540,7 @@ spr5_end			RS.L 1*(spr_pixel_per_datafetch/16)
 
 sprite5_size			RS.B 0
 
-; sprite6 main structure
+; Sprite6 main structure
 	RSRESET
 
 spr6_begin			RS.B 0
@@ -533,7 +549,7 @@ spr6_end			RS.L 1*(spr_pixel_per_datafetch/16)
 
 sprite6_size			RS.B 0
 
-; sprite7 main structure
+; Sprite7 main structure
 	RSRESET
 
 spr7_begin			RS.B 0
@@ -621,21 +637,7 @@ stop_fx_active			RS.W 1
 variables_size			RS.B 0
 
 
-; PT-Replay
-	INCLUDE "music-tracker/pt-song.i"
-
-	INCLUDE "music-tracker/pt-temp-channel.i"
-
-
-	RSRESET
-
-audio_channel_info		RS.B 0
-
-aci_speed			RS.W 1
-aci_step2_anglespeed		RS.W 1
-aci_step2_anglestep		RS.W 1
-
-audio_channel_info_size		RS.B 0
+	SECTION code,CODE
 
 
 	INCLUDE "sys-wrapper.i"
@@ -943,11 +945,10 @@ get_channels_amplitudes
 	CNOP 0,4
 get_channel_amplitude
 ; Input
-; d2.w	... Skalierung
-; a0	... Temporäre Struktur des Audiokanals
-; a1	... Zeiger auf Kanalinfo-Struktur
+; d2.w	Scaling
+; a0.l	Temporary audio channel structure
+; a1.l	Channel info structure
 ; Result
-; d0.l	... Kein Rückgabewert
 	tst.b	n_notetrigger(a0)	; new note played ?
 	bne.s	get_channel_amplitude_quit
 	move.b	#FALSE,n_notetrigger(a0)
