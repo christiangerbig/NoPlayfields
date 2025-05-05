@@ -1014,7 +1014,7 @@ vert_colorscroll3111
 	moveq	#vm_source_chan3,d1
 	MULUF.W audio_channel_info_size/WORD_SIZE,d1,d6
 	move.w	(vm_audio_channel1_info+aci_step2_anglestep,pc,d1.w*2),d7
-	swap	d7			: bits 16-31: angle step
+	swap	d7			: high word: angle step
 	move.w	#(cl2_display_width/2)-1,d7 ; bis 0-15: number of columns
 vert_colorscroll3111_loop1
 	swap	d7			; angle step
