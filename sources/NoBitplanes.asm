@@ -7,7 +7,7 @@
 ; History/Changes
 
 ; V.1.0 beta
-; - first release
+; - 1st release
 
 ; V.1.1 beta
 ; - revised include files included
@@ -803,11 +803,11 @@ lg_init_sprites
 	add.w	d1,d2			; VSTOP
 	lea	spr_ptrs_construction(pc),a2
 	SET_SPRITE_POSITION d0,d1,d2
-	move.l	(a2)+,a0		; first sprite structure
+	move.l	(a2)+,a0		; 1st sprite structure
 	move.w	d1,(a0)			; SPRPOS
 	move.w	d2,spr_pixel_per_datafetch/8(a0) ; SPRCTL
 	ADDF.W	(spr_pixel_per_datafetch/4),a0 ; skip sprite header
-	move.l	(a2),a1			; second sprite structure
+	move.l	(a2),a1			; 2nd sprite structure
 	move.w	d1,(a1)			; SPRPOS
 	or.b	#SPRCTLF_ATT,d2
 	move.w	d2,spr_pixel_per_datafetch/8(a1) ; SPRCTL
