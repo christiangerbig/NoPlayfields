@@ -1082,7 +1082,7 @@ vert_scrolltext_loop
 	MULUF.L vst_object_width*vst_object_depth,d0
 	add.l	d3,d0			; add y offset
 	WAITBLIT
-	move.l	(a1)+,(a2)		; character
+	move.l	(a1)+,(a2)		; character image
 	move.l	d0,(a4)			; sprite0 structure
 	move.w	d4,(a5)			; start blit operation
 	subq.w	#vst_vert_scroll_speed,d2
@@ -1090,7 +1090,7 @@ vert_scrolltext_loop
 	move.l	a0,-(a7)
 	bsr.s	vst_get_new_char_image
 	move.l	(a7)+,a0
-	move.l	d0,-4(a1)		; character
+	move.l	d0,-4(a1)		; character image
 	add.w	d5,d2			; restart y position
 vert_scrolltext_skip
 	move.w	d2,(a0)+		; y position
