@@ -12,10 +12,14 @@
 ; V.1.1 beta
 ; - revised include files included
 
+; V1.2 beta
+; - prod renamed to "NoPlayfields"
+
+
 
 ; PT 8xy command
-; 810	start Blind-Fader-In
-; 820	start Vert-Scrolltext
+; 810	Start Blind-Fader-In
+; 820	Start Vert-Scrolltext
 
 
 ; Execution time 68020: 197 raster lines
@@ -297,7 +301,7 @@ vst_vert_scroll_speed		EQU 1
 
 vst_text_char_y_shift_max	EQU vst_text_char_y_size
 vst_text_char_y_restart		EQU vst_vert_scroll_window_y_size
-vst_text_characters_number	EQU vst_vert_scroll_window_y_size/vst_text_char_y_size
+vst_text_chars_number	EQU vst_vert_scroll_window_y_size/vst_text_char_y_size
 
 vst_object_x_size		EQU 32
 vst_object_width		EQU vst_object_x_size/8
@@ -689,9 +693,9 @@ init_main
 	bsr	pt_InitFtuPeriodTableStarts
 	bsr	vm_init_audio_channels_info
 	bsr	vcs3111_init_bplam_table
-	bsr	vst_init_characters_offsets
-	bsr	vst_init_characters_y_positions
-	bsr	vst_init_characters_images
+	bsr	vst_init_chars_offsets
+	bsr	vst_init_chars_y_positions
+	bsr	vst_init_chars_images
 	bsr	init_colors
 	bsr	init_sprites
 	bsr	init_CIA_timers
@@ -739,11 +743,11 @@ vm_init_audio_channels_info
 
 
 ; Vert-Scrolltext
-	INIT_CHARACTERS_OFFSETS.W vst
+	INIT_CHARS_OFFSETS.W vst
 
-	INIT_CHARACTERS_Y_POSITIONS vst
+	INIT_CHARS_Y_POSITIONS vst
 
-	INIT_CHARACTERS_IMAGES vst
+	INIT_CHARS_IMAGES vst
 
 
 	CNOP 0,4
@@ -1014,10 +1018,10 @@ vert_colorscroll3111
 	moveq	#vm_source_chan3,d1
 	MULUF.W audio_channel_info_size/WORD_SIZE,d1,d6
 	move.w	(vm_audio_channel1_info+aci_step2_anglestep,pc,d1.w*2),d7
-	swap	d7			: high word: angle step
-	move.w	#(cl2_display_width/2)-1,d7 ; bis 0-15: number of columns
+	swap	d7			; high word: angle step
+	move.w	#(cl2_display_width/2)-1,d7 ; low word: loop counter
 vert_colorscroll3111_loop1
-	swap	d7			; angle step
+	swap	d7			; low word: angle step
 	move.w	d2,d1			; start value
 	MOVEF.W (cl2_display_y_size/2)-1,d6
 vert_colorscroll3111_loop2
@@ -1048,7 +1052,7 @@ vert_colorscroll3111_loop2
 		sub.w	d0,d2		; decrement start value
 		and.w	d3,d2		; remove overflow
 	ENDC
-	swap	d7			; loop counter
+	swap	d7			; low word: loop counter
 	add.l	a7,a1			; 2nd quadrant penultimate column
 	add.l	d5,a2			; 1st quadrant next column
 	sub.l	d5,a4			; 3rd quadrant penultimate column
@@ -1068,13 +1072,13 @@ vert_scrolltext
 	ADDF.L	(spr_pixel_per_datafetch/4),d3 ; skip sprite header
 	move.w	#(vst_copy_blit_y_size*64)+(vst_copy_blit_x_size/WORD_BITS),d4 ; BLTSIZE
 	MOVEF.W vst_text_char_y_restart,d5
-	lea	vst_characters_y_positions(pc),a0
-	lea	vst_characters_image_ptrs(pc),a1
+	lea	vst_chars_y_positions(pc),a0
+	lea	vst_chars_image_ptrs(pc),a1
 	lea	BLTAPT-DMACONR(a6),a2
 	lea	BLTDPT-DMACONR(a6),a4
 	lea	BLTSIZE-DMACONR(a6),a5
 	bsr.s	vert_scrolltext_init
-	moveq	#vst_text_characters_number-1,d7
+	moveq	#vst_text_chars_number-1,d7
 vert_scrolltext_loop
 	moveq	#0,d0
 	move.w	(a0),d0			; y
@@ -1101,9 +1105,9 @@ vert_scrolltext_quit
 	rts
 	CNOP 0,4
 vert_scrolltext_init
-	move.w	#DMAF_BLITHOG+DMAF_SETCLR,DMACON-DMACONR(a6)
+	move.w	#DMAF_BLITHOG|DMAF_SETCLR,DMACON-DMACONR(a6)
 	WAITBLIT
-	move.l	#(BC0F_SRCA+BC0F_DEST+ANBNC+ANBC+ABNC+ABC)<<16,BLTCON0-DMACONR(a6) ; minterm D=A
+	move.l	#(BC0F_SRCA|BC0F_DEST|ANBNC|ANBC|ABNC|ABC)<<16,BLTCON0-DMACONR(a6) ; minterm D=A
 	moveq	#-1,d0
 	move.l	d0,BLTAFWM-DMACONR(a6)
 	move.l	#((vst_image_plane_width-vst_text_char_width)<<16)+((vst_object_width-vst_text_char_width)+(spr_x_size2/8)),BLTAMOD-DMACONR(a6) ; A&D moduli
@@ -1316,7 +1320,7 @@ nmi_int_server
 
 	CNOP 0,4
 pf1_rgb8_color_table
-	INCLUDE "NoBitplanes:colortables/vcs3111_color-gradient.ct"
+	INCLUDE "NoPlayfields:colortables/vcs3111_color-gradient.ct"
 
 
 	CNOP 0,4
@@ -1378,16 +1382,16 @@ vst_ascii_end
 	EVEN
 
 	CNOP 0,2
-vst_characters_offsets
+vst_chars_offsets
 	DS.W vst_ascii_end-vst_ascii
 	
 	CNOP 0,2
-vst_characters_y_positions
-	DS.W vst_text_characters_number
+vst_chars_y_positions
+	DS.W vst_text_chars_number
 
 	CNOP 0,4
-vst_characters_image_ptrs
-	DS.L vst_text_characters_number
+vst_chars_image_ptrs
+	DS.L vst_text_chars_number
 
 
 ; Blind-Fader
@@ -1414,7 +1418,7 @@ bf_registers_table
 
 ; Vert-Scrolltext
 vst_text
-	REPT vst_text_characters_number/((vst_origin_char_y_size+1)/vst_text_char_y_size)
+	REPT vst_text_chars_number/((vst_origin_char_y_size+1)/vst_text_char_y_size)
 		DC.B " "
 	ENDR
 	DC.B "RESISTANCE IS BACK WITH ANOTHER INTRO CALLED   NO BITPLANES                "
@@ -1436,7 +1440,7 @@ vst_text
 	DC.B "GRAPHICS BY NN   "
 	DC.B "MUSIC BY MA2E                 "
 
-	REPT vst_text_characters_number/((vst_origin_char_y_size+1)/vst_text_char_y_size)
+	REPT vst_text_chars_number/((vst_origin_char_y_size+1)/vst_text_char_y_size)
 		DC.B " "
 	ENDR
 	DC.B FALSE
@@ -1444,10 +1448,10 @@ vst_text
 
 
 	DC.B "$VER: "
-	DC.B "RSE-NoBitplanes "
-	DC.B "1.1 beta "
-	DC.B "(2.6.24) "
-	DC.B "© 2024 by Resistance",0
+	DC.B "RSE-NoPlayfields "
+	DC.B "1.2 beta "
+	DC.B "(14.5.25) "
+	DC.B "© 2025 by Resistance",0
 	EVEN
 
 
@@ -1456,12 +1460,12 @@ vst_text
 ; PT-Replay
 	IFEQ pt_split_module_enabled
 pt_auddata			SECTION pt_audio,DATA
-		INCBIN "NoBitplanes:modules/MOD.end_of_2021.song"
+		INCBIN "NoPlayfields:modules/MOD.end_of_2021.song"
 pt_audsmps			SECTION pt_audio2,DATA_C
-		INCBIN "NoBitplanes:modules/MOD.end_of_2021.smps"
+		INCBIN "NoPlayfields:modules/MOD.end_of_2021.smps"
 	ELSE
 pt_auddata			SECTION pt_audio,DATA_C
-		INCBIN "NoBitplanes:modules/mod.end_of_2021"
+		INCBIN "NoPlayfields:modules/mod.end_of_2021"
 	ENDC
 
 
@@ -1469,11 +1473,11 @@ pt_auddata			SECTION pt_audio,DATA_C
 
 ; Logo
 lg_image_data			SECTION lg_gfx,DATA
-	INCBIN "NoBitplanes:graphics/32x256x16-Resistance.rawblit"
+	INCBIN "NoPlayfields:graphics/32x256x16-Resistance.rawblit"
 
 ; Vert-Scrolltext
 vst_image_data			SECTION vst_gfx,DATA_C
-	INCBIN "NoBitplanes:fonts/16x15x2-Font.rawblit"
+	INCBIN "NoPlayfields:fonts/16x15x2-Font.rawblit"
 	DS.B vst_image_plane_width*vst_image_depth ; empty line
 
 	END
