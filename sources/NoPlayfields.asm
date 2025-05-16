@@ -301,7 +301,7 @@ vst_vert_scroll_speed		EQU 1
 
 vst_text_char_y_shift_max	EQU vst_text_char_y_size
 vst_text_char_y_restart		EQU vst_vert_scroll_window_y_size
-vst_text_chars_number	EQU vst_vert_scroll_window_y_size/vst_text_char_y_size
+vst_text_chars_number		EQU vst_vert_scroll_window_y_size/vst_text_char_y_size
 
 vst_object_x_size		EQU 32
 vst_object_width		EQU vst_object_x_size/8
