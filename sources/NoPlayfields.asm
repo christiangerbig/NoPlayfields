@@ -90,9 +90,11 @@ pt_track_notes_played_enabled	EQU TRUE
 pt_track_volumes_enabled	EQU TRUE
 pt_track_periods_enabled	EQU TRUE
 pt_track_data_enabled		EQU FALSE
+	IFD PROTRACKER_VERSION_3
 pt_metronome_enabled		EQU FALSE
 pt_metrochanbits		EQU pt_metrochan1
 pt_metrospeedbits		EQU pt_metrospeed4th
+	ENDC
 
 ; Vert-Colorscroll 3.1.1.1
 vcs3111_bplam_table_length_256	EQU TRUE
@@ -163,7 +165,6 @@ spr_swap_number			EQU 1
 	IFD PROTRACKER_VERSION_2 
 audio_memory_size		EQU 0
 	ENDC
-
 	IFD PROTRACKER_VERSION_3
 audio_memory_size		EQU 1*WORD_SIZE
 	ENDC
@@ -171,6 +172,7 @@ audio_memory_size		EQU 1*WORD_SIZE
 disk_memory_size		EQU 0
 
 chip_memory_size		EQU 0
+
 	IFEQ pt_ciatiming_enabled
 ciab_cra_bits			EQU CIACRBF_LOAD
 	ENDC
@@ -614,9 +616,9 @@ vcs3111_bplam_table_start	RS.W 1
 vcs3111_step2_angle		RS.W 1
 
 ; Vert-Scrolltext
+vst_active			RS.W 1
 	RS_ALIGN_LONGWORD
 vst_image			RS.L 1
-vst_enabled			RS.W 1
 vst_text_table_start		RS.W 1
 
 ; Blind-Fader
@@ -658,14 +660,13 @@ init_main_variables
 
 ; Vert-Colorscroll 3.1.1.1
 	move.w	d0,vcs3111_bplam_table_start(a3)
-	moveq	#sine_table_length/4,d2
-	move.w	d2,vcs3111_step2_angle(a3)
+	move.w	#sine_table_length/4,vcs3111_step2_angle(a3)
 
 ; Vert-Scrolltext
+	moveq	#FALSE,d1
+	move.w	d1,vst_active(a3)
 	lea	vst_image_data,a0
 	move.l	a0,vst_image(a3)
-	moveq	#FALSE,d1
-	move.w	d1,vst_enabled(a3)
 	move.w	d0,vst_text_table_start(a3)
 
 ; Blind-Fader
@@ -1066,7 +1067,7 @@ vert_colorscroll3111_loop2
 	CNOP 0,4
 vert_scrolltext
 	movem.l a4-a5,-(a7)
-	tst.w	vst_enabled(a3)
+	tst.w	vst_active(a3)
 	bne.s	vert_scrolltext_quit
 	move.l	spr_ptrs_construction+(2*LONGWORD_SIZE)(pc),d3 ; sprite2 structure
 	ADDF.L	(spr_pixel_per_datafetch/4),d3 ; skip sprite header
@@ -1083,8 +1084,8 @@ vert_scrolltext_loop
 	moveq	#0,d0
 	move.w	(a0),d0			; y
 	move.w	d0,d2
-	MULUF.L vst_object_width*vst_object_depth,d0
-	add.l	d3,d0			; add y offset
+	MULUF.L vst_object_width*vst_object_depth,d0,d1 ; y offset
+	add.l	d3,d0			; add sprite2 structure
 	WAITBLIT
 	move.l	(a1)+,(a2)		; character image
 	move.l	d0,(a4)			; sprite0 structure
@@ -1094,7 +1095,7 @@ vert_scrolltext_loop
 	move.l	a0,-(a7)
 	bsr.s	vst_get_new_char_image
 	move.l	(a7)+,a0
-	move.l	d0,-4(a1)		; character image
+	move.l	d0,-LONGWORD_SIZE(a1)	; character image
 	add.w	d5,d2			; restart y position
 vert_scrolltext_skip
 	move.w	d2,(a0)+		; y position
@@ -1296,7 +1297,7 @@ pt_start_blind_fader_in
 	rts
 	CNOP 0,4
 pt_start_scrolltext
-	clr.w	vst_enabled(a3)
+	clr.w	vst_active(a3)
 	rts
 
 	CNOP 0,4
