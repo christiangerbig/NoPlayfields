@@ -1071,7 +1071,7 @@ vert_scrolltext
 	bne.s	vert_scrolltext_quit
 	move.l	spr_ptrs_construction+(2*LONGWORD_SIZE)(pc),d3 ; sprite2 structure
 	ADDF.L	(spr_pixel_per_datafetch/4),d3 ; skip sprite header
-	move.w	#(vst_copy_blit_y_size<<6)+(vst_copy_blit_x_size/WORD_BITS),d4 ; BLTSIZE
+	move.w	#((vst_copy_blit_y_size)<<6)+(vst_copy_blit_x_size/WORD_BITS),d4 ; BLTSIZE
 	MOVEF.W vst_text_char_y_restart,d5
 	lea	vst_chars_y_positions(pc),a0
 	lea	vst_chars_image_ptrs(pc),a1
@@ -1115,7 +1115,7 @@ vert_scrolltext_init
 	rts
 
 
-	GET_NEW_char_IMAGE.W vst
+	GET_NEW_CHAR_IMAGE.W vst
 
 
 	IFEQ open_border_enabled
