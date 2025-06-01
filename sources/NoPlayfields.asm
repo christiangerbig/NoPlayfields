@@ -247,7 +247,7 @@ cl2_hstart1			EQU display_window_hstart-(1*CMOVE_SLOT_PERIOD)-4
 cl2_hstart1			EQU display_window_hstart-4
 	ENDC
 cl2_vstart1			EQU MINROW
-cl2_hstart2			EQU $00
+cl2_hstart2			EQU 0
 cl2_vstart2			EQU beam_position&$ff
 
 sine_table_length		EQU 256
@@ -791,7 +791,7 @@ init_colors
 
 	CNOP 0,4
 init_sprites
-	bsr.s	spr_init_ptrs_table
+	bsr.s	spr_init_pointers_table
 	bsr.s	lg_init_sprites
 	bsr	vst_init_xy_coords
 	bra	spr_copy_structures
@@ -806,7 +806,7 @@ lg_init_sprites
 	moveq	#lg_image_y_position,d1	; VSTART
 	move.w	#lg_image_y_size,d2
 	add.w	d1,d2			; VSTOP
-	lea	spr_ptrs_construction(pc),a2
+	lea	spr_pointers_construction(pc),a2
 	SET_SPRITE_POSITION d0,d1,d2
 	move.l	(a2)+,a0		; 1st sprite structure
 	move.w	d1,(a0)			; SPRPOS
@@ -835,7 +835,7 @@ vst_init_xy_coords
 	moveq	#display_window_vstart-vst_text_char_y_size,d1 ; VSTART
 	move.w	#vst_object_y_size,d2
 	add.w	d1,d2			; VSTOP
-	move.l	spr_ptrs_construction+(2*LONGWORD_SIZE)(pc),a0 ; sprite2 structure
+	move.l	spr_pointers_construction+(2*LONGWORD_SIZE)(pc),a0 ; sprite2 structure
 	SET_SPRITE_POSITION d0,d1,d2
 	move.w	d1,(a0)			; SPRPOS
 	move.w	d2,spr_pixel_per_datafetch/8(a0) ; SPRCTL
@@ -856,15 +856,15 @@ init_CIA_timers
 init_first_copperlist
 	move.l	cl1_display(a3),a0
 	bsr.s	cl1_init_playfield_props
-	bsr	cl1_init_sprite_ptrs
+	bsr	cl1_init_sprite_pointers
 	IFEQ open_border_enabled
 		COP_MOVEQ 0,COPJMP2
-		bra	cl1_set_sprite_ptrs
+		bra	cl1_set_sprite_pointers
 	ELSE
-		bsr.s	cl1_init_plane_ptrs
+		bsr.s	cl1_init_bitplane_pointers
 		COP_MOVEQ 0,COPJMP2
-		bsr	cl1_set_sprite_ptrs
-		bra	cl1_set_plane_ptrs
+		bsr	cl1_set_sprite_pointers
+		bra	cl1_set_bitplane_pointers
 	ENDC
 
 	IFEQ open_border_enabled
@@ -916,8 +916,8 @@ no_sync_routines
 beam_routines
 	bsr	wait_copint
 	bsr.s	swap_second_copperlist
-	bsr.s	spr_swap_structures
-	bsr.s	spr_set_sprite_ptrs
+	bsr.s	swap_sprite_structures
+	bsr.s	set_sprite_pointers
 	bsr	vert_scrolltext
 	bsr	get_channels_amplitudes
 	bsr	vert_colorscroll3111
@@ -934,10 +934,10 @@ beam_routines
 	SWAP_COPPERLIST cl2,2
 
 
-	SWAP_SPRITES spr,spr_swap_number,2
+	SWAP_SPRITES spr_swap_number,2
 
 
-	SET_SPRITES spr,spr_swap_number,2
+	SET_SPRITES spr_swap_number,2
 
 
 	CNOP 0,4
@@ -1069,12 +1069,12 @@ vert_scrolltext
 	movem.l a4-a5,-(a7)
 	tst.w	vst_active(a3)
 	bne.s	vert_scrolltext_quit
-	move.l	spr_ptrs_construction+(2*LONGWORD_SIZE)(pc),d3 ; sprite2 structure
+	move.l	spr_pointers_construction+(2*LONGWORD_SIZE)(pc),d3 ; sprite2 structure
 	ADDF.L	(spr_pixel_per_datafetch/4),d3 ; skip sprite header
 	move.w	#((vst_copy_blit_y_size)<<6)+(vst_copy_blit_x_size/WORD_BITS),d4 ; BLTSIZE
 	MOVEF.W vst_text_char_y_restart,d5
 	lea	vst_chars_y_positions(pc),a0
-	lea	vst_chars_image_ptrs(pc),a1
+	lea	vst_chars_image_pointers(pc),a1
 	lea	BLTAPT-DMACONR(a6),a2
 	lea	BLTDPT-DMACONR(a6),a4
 	lea	BLTSIZE-DMACONR(a6),a5
@@ -1325,12 +1325,12 @@ pf1_rgb8_color_table
 
 
 	CNOP 0,4
-spr_ptrs_construction
+spr_pointers_construction
 	DS.L spr_number
 
 
 	CNOP 0,4
-spr_ptrs_display
+spr_pointers_display
 	DS.L spr_number
 
 
@@ -1391,7 +1391,7 @@ vst_chars_y_positions
 	DS.W vst_text_chars_number
 
 	CNOP 0,4
-vst_chars_image_ptrs
+vst_chars_image_pointers
 	DS.L vst_text_chars_number
 
 
