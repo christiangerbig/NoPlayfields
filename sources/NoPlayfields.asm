@@ -793,7 +793,7 @@ init_colors
 init_sprites
 	bsr.s	spr_init_pointers_table
 	bsr.s	lg_init_sprites
-	bsr	vst_init_xy_coords
+	bsr	vst_init_xy_coordinates
 	bra	spr_copy_structures
 
 	INIT_SPRITE_POINTERS_TABLE
@@ -830,7 +830,7 @@ lg_init_sprites_loop
 
 ; Vert-Scrolltext
 	CNOP 0,4
-vst_init_xy_coords
+vst_init_xy_coordinates
 	move.w	#(display_window_hstop-vst_text_char_x_size)*SHIRES_PIXEL_FACTOR,d0 ; HSTART
 	moveq	#display_window_vstart-vst_text_char_y_size,d1 ; VSTART
 	move.w	#vst_object_y_size,d2
