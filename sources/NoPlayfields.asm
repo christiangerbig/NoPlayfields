@@ -1076,7 +1076,7 @@ vert_scrolltext
 	bne.s	vert_scrolltext_quit
 	move.l	spr_pointers_construction+(2*LONGWORD_SIZE)(pc),d3 ; sprite2 structure
 	ADDF.L	(spr_pixel_per_datafetch/4),d3 ; skip sprite header
-	move.w	#((vst_copy_blit_y_size)<<6)+(vst_copy_blit_x_size/WORD_BITS),d4 ; BLTSIZE
+	move.w	#((vst_copy_blit_y_size)<<6)|(vst_copy_blit_x_size/WORD_BITS),d4 ; BLTSIZE
 	MOVEF.W vst_text_char_y_restart,d5
 	lea	vst_chars_y_positions(pc),a0
 	lea	vst_chars_image_pointers(pc),a1
@@ -1116,7 +1116,7 @@ vert_scrolltext_init
 	move.l	#(BC0F_SRCA|BC0F_DEST|ANBNC|ANBC|ABNC|ABC)<<16,BLTCON0-DMACONR(a6) ; minterm D=A
 	moveq	#-1,d0
 	move.l	d0,BLTAFWM-DMACONR(a6)
-	move.l	#((vst_image_plane_width-vst_text_char_width)<<16)+((vst_object_width-vst_text_char_width)+(spr_x_size2/8)),BLTAMOD-DMACONR(a6) ; A&D moduli
+	move.l	#((vst_image_plane_width-vst_text_char_width)<<16)|((vst_object_width-vst_text_char_width)+(spr_x_size2/8)),BLTAMOD-DMACONR(a6) ; A&D moduli
 	rts
 
 
