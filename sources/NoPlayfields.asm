@@ -15,6 +15,9 @@
 ; V1.2 beta
 ; - prod renamed to "NoPlayfields"
 
+; V1.3 beta
+; - Grass' logo added
+
 
 
 ; PT 8xy command
@@ -157,7 +160,7 @@ spr_x_size1			EQU 32
 spr_x_size2			EQU 32
 spr_depth			EQU 2
 spr_colors_number		EQU 0	; 4
-spr_odd_color_table_select	EQU 14	; logo
+spr_odd_color_table_select	EQU 13	; logo
 spr_even_color_table_select	EQU 1	; scroll text
 spr_used_number			EQU 1
 spr_swap_number			EQU 1
@@ -1326,7 +1329,7 @@ nmi_int_server
 
 	CNOP 0,4
 pf1_rgb8_color_table
-	INCLUDE "NoPlayfields:colortables/vcs3111_color-gradient.ct"
+	INCLUDE "NoPlayfields:colortables/color-gradient.ct"
 
 
 	CNOP 0,4
@@ -1455,8 +1458,8 @@ vst_text
 
 	DC.B "$VER: "
 	DC.B "RSE-NoPlayfields "
-	DC.B "1.2 beta "
-	DC.B "(14.5.25) "
+	DC.B "1.3 beta "
+	DC.B "(1.8.25) "
 	DC.B "© 2025 by Resistance",0
 	EVEN
 
