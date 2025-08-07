@@ -18,6 +18,10 @@
 ; V1.3 beta
 ; - Grass' logo added
 
+; 1.4 beta
+; - Grass' font added
+; - Font colour changed
+
 
 
 ; PT 8xy command
@@ -161,7 +165,7 @@ spr_x_size2			EQU 32
 spr_depth			EQU 2
 spr_colors_number		EQU 0	; 4
 spr_odd_color_table_select	EQU 13	; logo
-spr_even_color_table_select	EQU 1	; scroll text
+spr_even_color_table_select	EQU 10	; scroll text
 spr_used_number			EQU 1
 spr_swap_number			EQU 1
 
@@ -1438,7 +1442,7 @@ vst_text
 	DC.B "EPHIDRENA   "
 	DC.B "FOCUS DESIGN   "
 	DC.B "GHOSTOWN   "
-	DC.B "NAH-KOLOR   "
+	DC.B "NAH KOLOR   "
 	DC.B "PLANET JAZZ   "
 	DC.B "SOFTWARE FAILURE   "
 	DC.B "TEK   "
