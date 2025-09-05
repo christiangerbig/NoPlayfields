@@ -18,9 +18,11 @@
 ; V1.3 beta
 ; - Grass' logo added
 
-; 1.4 beta
+; V.1.4 beta
 ; - Grass' font added
 ; - Font colour changed
+; - Ma2e's module added
+; - Grettings updated
 
 
 
@@ -87,8 +89,8 @@ text_output_enabled		EQU FALSE
 open_border_enabled		EQU TRUE
 
 pt_ciatiming_enabled		EQU TRUE
-pt_usedfx			EQU %1011110101111111
-pt_usedefx			EQU %0000000000000000
+pt_usedfx			EQU %1111110101011110
+pt_usedefx			EQU %0000000001000000
 pt_mute_enabled			EQU FALSE
 pt_music_fader_enabled		EQU TRUE
 pt_fade_out_delay		EQU 1	; tick
@@ -269,12 +271,12 @@ lg_image_x_position		EQU display_window_hstart
 lg_image_y_position		EQU display_window_vstart
 
 ; Volume-Meter
-vm_source_chan1			EQU 2
-vm_source_chan2			EQU 3
-vm_source_chan3			EQU 3
-vm_period_div			EQU 11
-vm_max_period_step		EQU 9
-vm_volume_div			EQU 6
+vm_source_chan1			EQU 0
+vm_source_chan2			EQU 1
+vm_source_chan3			EQU 2
+vm_period_div			EQU 15
+vm_max_period_step		EQU 6
+vm_volume_div			EQU 8
 
 ; Vert-Colorscroll 3.1.1.1
 vcs3111_bar_height		EQU 128
@@ -1267,12 +1269,12 @@ mh_exit_demo
 
 	IFEQ pt_ciatiming_enabled
 		CNOP 0,4
-ciab_ta_int_server
+ciab_ta_server
 	ENDC
 
 	IFNE pt_ciatiming_enabled
 		CNOP 0,4
-VERTB_int_server
+VERTB_server
 	ENDC
 
 
@@ -1313,15 +1315,15 @@ pt_start_scrolltext
 	rts
 
 	CNOP 0,4
-ciab_tb_int_server
+ciab_tb_server
 	PT_TIMER_INTERRUPT_SERVER
 
 	CNOP 0,4
-EXTER_int_server
+EXTER_server
 	rts
 
 	CNOP 0,4
-nmi_int_server
+nmi_server
 	rts
 
 
@@ -1434,24 +1436,32 @@ vst_text
 	REPT vst_text_chars_number/((vst_origin_char_y_size+1)/vst_text_char_y_size)
 		DC.B " "
 	ENDR
-	DC.B "RESISTANCE IS BACK WITH ANOTHER INTRO CALLED   NO BITPLANES                "
+	DC.B "RESISTANCE IS BACK WITH ANOTHER INTRO CALLED  *NO BITPLANES* "
 
+	REPT vst_text_chars_number/((vst_origin_char_y_size+1)/vst_text_char_y_size)
+		DC.B " "
+	ENDR
 	DC.B "GREETINGS FLY TO   "
-	DC.B "ALL AT DEADLINE 2025   "
-	DC.B "DESIRE   "
-	DC.B "EPHIDRENA   "
-	DC.B "FOCUS DESIGN   "
-	DC.B "GHOSTOWN   "
-	DC.B "NAH KOLOR   "
-	DC.B "PLANET JAZZ   "
-	DC.B "SOFTWARE FAILURE   "
-	DC.B "TEK   "
-	DC.B "WANTED TEAM                 "
+	DC.B "ALL AT DEADLINE 2025 # "
+	DC.B "BOOM! # "
+	DC.B "DESIRE # "
+	DC.B "FOCUS DESIGN # "
+	DC.B "MYSTIC # "
+	DC.B "OXYGENE # "
+	DC.B "POO-BRAIN # "
+	DC.B "GHOSTOWN # "
+	DC.B "PLANET JAZZ # "
+	DC.B "THE ELECTRONIC KNIGHTS # "
+	DC.B "SPREADPOINT # "
+	DC.B "VISION FACTORY   "
 
+	REPT vst_text_chars_number/((vst_origin_char_y_size+1)/vst_text_char_y_size)
+		DC.B " "
+	ENDR
 	DC.B "THE CREDITS    "
-	DC.B "CODING BY DISSIDENT   "
-	DC.B "GRAPHICS BY NN   "
-	DC.B "MUSIC BY MA2E                 "
+	DC.B "CODING BY *DISSIDENT*   "
+	DC.B "GRAPHICS BY *GRASS*   "
+	DC.B "MUSIC BY *MA2E*   "
 
 	REPT vst_text_chars_number/((vst_origin_char_y_size+1)/vst_text_char_y_size)
 		DC.B " "
@@ -1462,8 +1472,8 @@ vst_text
 
 	DC.B "$VER: "
 	DC.B "RSE-NoPlayfields "
-	DC.B "1.3 beta "
-	DC.B "(1.8.25) "
+	DC.B "1.4 beta "
+	DC.B "(5.9.25) "
 	DC.B "© 2025 by Resistance",0
 	EVEN
 
@@ -1473,12 +1483,12 @@ vst_text
 ; PT-Replay
 	IFEQ pt_split_module_enabled
 pt_auddata			SECTION pt_audio,DATA
-		INCBIN "NoPlayfields:modules/MOD.end_of_2021.song"
+		INCBIN "NoPlayfields:modules/MOD.alive and trashy.song"
 pt_audsmps			SECTION pt_audio2,DATA_C
-		INCBIN "NoPlayfields:modules/MOD.end_of_2021.smps"
+		INCBIN "NoPlayfields:modules/MOD.alive and trashy.smps"
 	ELSE
 pt_auddata			SECTION pt_audio,DATA_C
-		INCBIN "NoPlayfields:modules/mod.end_of_2021"
+		INCBIN "NoPlayfields:modules/mod.alive and trashy"
 	ENDC
 
 
