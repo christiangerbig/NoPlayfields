@@ -24,6 +24,9 @@
 ; - Ma2e's module added
 ; - Grettings updated
 
+; V.1.5 beta
+; - Module bugfix: Due to the fact that I added an extra pattern at position 0
+;   the module didn't restart correctly anymore. Fx command B01 changed to B02.
 
 
 ; PT 8xy command
@@ -31,7 +34,7 @@
 ; 820	Start Vert-Scrolltext
 
 
-; Execution time 68020: 197 rasterlines
+; Execution time 68020: n rasterlines
 
 
 	MC68040
@@ -993,7 +996,7 @@ get_channel_amplitude
 	move.w	d0,(a1)+		; step2 angle speed
 	move.w	n_currentvolume(a0),d0
 	DIVUF.W d3,d0,d1
-	move.w	d1,(a1)+                ; step2 angle step
+	move.w	d1,(a1)+		; step2 angle step
 get_channel_amplitude_quit
 	rts
 
@@ -1472,8 +1475,8 @@ vst_text
 
 	DC.B "$VER: "
 	DC.B "RSE-NoPlayfields "
-	DC.B "1.4 beta "
-	DC.B "(5.9.25) "
+	DC.B "1.5 beta "
+	DC.B "(6.9.25) "
 	DC.B "© 2025 by Resistance",0
 	EVEN
 
