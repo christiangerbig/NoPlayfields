@@ -28,13 +28,18 @@
 ; - Module bugfix: Due to the fact that I added an extra pattern at position 0
 ;   the module didn't restart correctly anymore. Fx command B01 changed to B02.
 
+; V.1.6 beta
+; bootable adf created
+; workbench start activated
+; Grass' updated font included
+
 
 ; PT 8xy command
 ; 810	Start Blind-Fader-In
 ; 820	Start Vert-Scrolltext
 
 
-; Execution time 68020: n rasterlines
+; Execution time 68020: 203 rasterlines
 
 
 	MC68040
