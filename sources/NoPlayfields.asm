@@ -93,7 +93,7 @@ requires_060_cpu		EQU FALSE
 requires_fast_memory		EQU FALSE
 requires_multiscan_monitor	EQU FALSE
 
-workbench_start_enabled		EQU FALSE
+workbench_start_enabled		EQU TRUE
 screen_fader_enabled		EQU TRUE
 text_output_enabled		EQU FALSE
 
@@ -1488,8 +1488,8 @@ vst_text
 
 	DC.B "$VER: "
 	DC.B "RSE-NoPlayfields "
-	DC.B "1.6 beta "
-	DC.B "(12.9.25) "
+	DC.B "1.0 "
+	DC.B "(13.9.25) "
 	DC.B "© 2025 by Resistance",0
 	EVEN
 
