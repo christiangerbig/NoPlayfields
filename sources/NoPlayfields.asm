@@ -29,9 +29,12 @@
 ;   the module didn't restart correctly anymore. Fx command B01 changed to B02.
 
 ; V.1.6 beta
-; bootable adf created
-; workbench start activated
-; Grass' updated font included
+; - Grass' updated font included
+; - fader enabled
+
+; V.1.0
+; - bootable adf created
+; - workbench start activated
 
 
 ; PT 8xy command
@@ -39,7 +42,7 @@
 ; 820	Start Vert-Scrolltext
 
 
-; Execution time 68020: 203 rasterlines
+; Execution time 68020: 207 rasterlines
 
 
 	MC68040
@@ -91,7 +94,7 @@ requires_fast_memory		EQU FALSE
 requires_multiscan_monitor	EQU FALSE
 
 workbench_start_enabled		EQU FALSE
-screen_fader_enabled		EQU FALSE
+screen_fader_enabled		EQU TRUE
 text_output_enabled		EQU FALSE
 
 open_border_enabled		EQU TRUE
@@ -1444,7 +1447,7 @@ vst_text
 	REPT vst_text_chars_number/((vst_origin_char_y_size+1)/vst_text_char_y_size)
 		DC.B " "
 	ENDR
-	DC.B "RESISTANCE IS BACK WITH ANOTHER INTRO CALLED  *NO BITPLANES* "
+	DC.B "RESISTANCE IS BACK WITH ANOTHER INTRO CALLED  * NO PLAYFIELDS * "
 
 	REPT vst_text_chars_number/((vst_origin_char_y_size+1)/vst_text_char_y_size)
 		DC.B " "
@@ -1466,22 +1469,27 @@ vst_text
 	REPT vst_text_chars_number/((vst_origin_char_y_size+1)/vst_text_char_y_size)
 		DC.B " "
 	ENDR
-	DC.B "THE CREDITS    "
-	DC.B "CODING BY *DISSIDENT*   "
-	DC.B "GRAPHICS BY *GRASS*   "
-	DC.B "MUSIC BY *MA2E*   "
+	DC.B "THE CREDITS   "
+	DC.B "CODING BY DISSIDENT   "
+	DC.B "GRAPHICS BY GRASS   "
+	DC.B "MUSIC BY MA2E   "
 
 	REPT vst_text_chars_number/((vst_origin_char_y_size+1)/vst_text_char_y_size)
 		DC.B " "
 	ENDR
+	DC.B "TEXT RESTARTS..."
+	REPT vst_text_chars_number/((vst_origin_char_y_size+1)/vst_text_char_y_size)
+		DC.B " "
+	ENDR
+
 	DC.B FALSE
 	EVEN
 
 
 	DC.B "$VER: "
 	DC.B "RSE-NoPlayfields "
-	DC.B "1.5 beta "
-	DC.B "(6.9.25) "
+	DC.B "1.6 beta "
+	DC.B "(12.9.25) "
 	DC.B "© 2025 by Resistance",0
 	EVEN
 
