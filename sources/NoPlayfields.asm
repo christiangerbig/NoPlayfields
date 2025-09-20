@@ -1489,7 +1489,7 @@ vst_text
 	DC.B "$VER: "
 	DC.B "RSE-NoPlayfields "
 	DC.B "1.0 "
-	DC.B "(13.9.25) "
+	DC.B "(20.9.25) "
 	DC.B "© 2025 by Resistance",0
 	EVEN
 
