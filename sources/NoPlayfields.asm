@@ -1021,8 +1021,8 @@ vert_colorscroll3111
 	IFEQ vcs3111_bplam_table_length_256
 		add.b (vm_audio_channel1_info+aci_speed+1,pc,d1.w*2),d0 ; increase start value
 	ELSE
-		MOVEF.W vcs3111_bplam_table_size-1,d3 ; overlow number of entries
 		add.w	(vm_audio_channel1_info+aci_speed,pc,d1.w*2),d0 ; increase start value
+		MOVEF.W vcs3111_bplam_table_size-1,d3 ; overlow number of entries
 		and.w	d3,d0		; remove overflow
 	ENDC
 	move.w	d0,vcs3111_bplam_table_start(a3) 
@@ -1053,11 +1053,11 @@ vert_colorscroll3111_loop1
 vert_colorscroll3111_loop2
 	move.b	(a0,d1.w),d0		; BPLAM
 	move.b	d0,(a1)			; BPLCON4 high
-	sub.l	a6,a1			; 2nd quadrant penultimate line in cl
+	sub.l	a6,a1			; 2nd quadrant penultimate line
 	move.b	d0,(a2)			; BPLCON4 high
-	sub.l	a6,a2			; 1st quadrant penultimate line in cl
+	sub.l	a6,a2			; 1st quadrant penultimate line
 	move.b	d0,(a4)			; BPLCON4 high
-	add.l	a6,a4			; 3rd qudarant next line in cl
+	add.l	a6,a4			; 3rd qudarant next line
 	move.b	d0,(a5)			; BPLCON4 high
 	IFEQ vcs3111_bplam_table_length_256
 		subq.b	#vcs3111_step1,d1 ; next BPLAM
@@ -1065,10 +1065,10 @@ vert_colorscroll3111_loop2
 		subq.w	#vcs3111_step1,d1 ; next BPLAM
 		and.w	d3,d1		; remove overflow
 	ENDC
-	add.l	a6,a5			; 4th qudarant next line in cl
+	add.l	a6,a5			; 4th qudarant next line
 	dbf	d6,vert_colorscroll3111_loop2
 	move.l	(a3,d4.w*4),d0		; sin(w)
-	MULUF.L vcs3111_step2_radius*2,d0 ; y'=(yr*sin(w))/2^15
+	MULUF.L vcs3111_step2_radius*2,d0 ; y' = (yr*sin(w))/2^15
 	add.b	d7,d4			; next y angle
 	swap	d0
 	add.w	#vcs3111_step2_center,d0
@@ -1179,15 +1179,15 @@ blind_fader_in_loop2
 		move.w	(a0,d1.w*2),d0	; register address
 		IFNE cl2_size1
 			move.w	d0,(a1)
-			add.l	d4,a1	; next line in cl
+			add.l	d4,a1	; next line
 		ENDC
 		IFNE cl2_size2
 			move.w	d0,(a2)
-			add.l	d4,a2	; next line in cl
+			add.l	d4,a2	; next line
 		ENDC
 		move.w	d0,(a4)
 		addq.w	#bf_step1,d1	; next entry
-		add.l	d4,a4		; next line in cl
+		add.l	d4,a4		; next line
 		cmp.w	d3,d1		; end of table ?
 		blt.s	blind_fader_in_skip2
 		sub.w	d3,d1		; reset start
@@ -1237,15 +1237,15 @@ blind_fader_out_loop2
 		move.w	(a0,d1.w*2),d0	; register address
 		IFNE cl2_size1
 			move.w	d0,(a1)
-			add.l	d4,a1	; next line in cl
+			add.l	d4,a1	; next line
 		ENDC
 		IFNE cl2_size2
 			move.w	d0,(a2)
-			add.l	d4,a2	; next line in cl
+			add.l	d4,a2	; next line
 		ENDC
 		move.w	d0,(a4)
 		addq.w	#bf_step1,d1	; next entry
-		add.l	d4,a4		; next line in cl
+		add.l	d4,a4		; next line
 		cmp.w	d3,d1		; end of table ?
 		blt.s	blind_fader_out_skip2
 		sub.w	d3,d1		; reset start
