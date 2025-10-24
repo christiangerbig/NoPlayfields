@@ -1133,7 +1133,7 @@ vert_scrolltext_quit
 vert_scrolltext_init
 	move.w	#DMAF_BLITHOG|DMAF_SETCLR,DMACON-DMACONR(a6)
 	WAITBLIT
-	move.l	#(BC0F_SRCA|BC0F_DEST|ANBNC|ANBC|ABNC|ABC)<<16,BLTCON0-DMACONR(a6) ; minterm D=A
+	move.l	#(BC0F_SRCA|BC0F_DEST|ANBNC|ANBC|ABNC|ABC)<<16,BLTCON0-DMACONR(a6) ; minterm D = A
 	moveq	#-1,d0
 	move.l	d0,BLTAFWM-DMACONR(a6)
 	move.l	#((vst_image_plane_width-vst_text_char_width)<<16)|((vst_object_width-vst_text_char_width)+(spr_x_size2/8)),BLTAMOD-DMACONR(a6) ; A&D moduli
@@ -1499,12 +1499,12 @@ vst_text
 ; PT-Replay
 	IFEQ pt_split_module_enabled
 pt_auddata			SECTION pt_audio,DATA
-		INCBIN "NoPlayfields:modules/MOD.alive and trashy.song"
+		INCBIN "NoPlayfields:trackermodules/MOD.alive and trashy.song"
 pt_audsmps			SECTION pt_audio2,DATA_C
-		INCBIN "NoPlayfields:modules/MOD.alive and trashy.smps"
+		INCBIN "NoPlayfields:trackermodules/MOD.alive and trashy.smps"
 	ELSE
 pt_auddata			SECTION pt_audio,DATA_C
-		INCBIN "NoPlayfields:modules/mod.alive and trashy"
+		INCBIN "NoPlayfields:trackermodules/mod.alive and trashy"
 	ENDC
 
 
