@@ -1425,10 +1425,10 @@ vst_chars_image_pointers
 		CNOP 0,2
 bf_registers_table
 		REPT bf_registers_table_length/2
-			DC.W NOOP
+		DC.W NOOP
 		ENDR
 		REPT bf_registers_table_length/2
-			DC.W BPL1DAT
+		DC.W BPL1DAT
 		ENDR
 	ENDC
 
@@ -1445,12 +1445,12 @@ bf_registers_table
 ; Vert-Scrolltext
 vst_text
 	REPT vst_text_chars_number/((vst_origin_char_y_size+1)/vst_text_char_y_size)
-		DC.B " "
+	DC.B " "
 	ENDR
 	DC.B "RESISTANCE IS BACK WITH ANOTHER INTRO CALLED  * NO PLAYFIELDS * "
 
 	REPT vst_text_chars_number/((vst_origin_char_y_size+1)/vst_text_char_y_size)
-		DC.B " "
+	DC.B " "
 	ENDR
 	DC.B "GREETINGS FLY TO   "
 	DC.B "ALL AT DEADLINE 2025 # "
@@ -1467,7 +1467,7 @@ vst_text
 	DC.B "VISION FACTORY   "
 
 	REPT vst_text_chars_number/((vst_origin_char_y_size+1)/vst_text_char_y_size)
-		DC.B " "
+	DC.B " "
 	ENDR
 	DC.B "THE CREDITS   "
 	DC.B "CODING BY DISSIDENT   "
@@ -1475,11 +1475,11 @@ vst_text
 	DC.B "MUSIC BY MA2E   "
 
 	REPT vst_text_chars_number/((vst_origin_char_y_size+1)/vst_text_char_y_size)
-		DC.B " "
+	DC.B " "
 	ENDR
 	DC.B "TEXT RESTARTS..."
 	REPT vst_text_chars_number/((vst_origin_char_y_size+1)/vst_text_char_y_size)
-		DC.B " "
+	DC.B " "
 	ENDR
 
 	DC.B FALSE
