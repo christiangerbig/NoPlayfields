@@ -1270,9 +1270,16 @@ mouse_handler
 	rts
 	CNOP 0,4
 mh_exit_demo
-	move.w	#FALSE,pt_effects_handler_active(a3)
-	clr.w	pt_music_fader_active(a3)
-	clr.w	bfo_active(a3)
+	moveq	#FALSE,d1
+	move.w	d1,pt_effects_handler_active(a3)
+	moveq	#TRUE,d0
+	move.w	d0,pt_music_fader_active(a3)
+; Blind-Fader
+	tst.w	bfi_active(a3)		; fader still running ?
+	bne.s	mh_exit_demo_skip	; force fader stop
+	move.w	d1,bfi_active(a3)
+mh_exit_demo_skip
+	move.w	d0,bfo_active(a3)
 	rts
 
 
@@ -1281,9 +1288,7 @@ mh_exit_demo
 	IFEQ pt_ciatiming_enabled
 		CNOP 0,4
 ciab_ta_server
-	ENDC
-
-	IFNE pt_ciatiming_enabled
+	ELSE
 		CNOP 0,4
 VERTB_server
 	ENDC
