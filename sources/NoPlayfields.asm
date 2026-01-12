@@ -1151,15 +1151,15 @@ blind_fader_in
 		bne.s	blind_fader_in_quit
 		move.w	bf_registers_table_start(a3),d2
 		move.w	d2,d0
-		addq.w	#bf_speed,d0	; next entry
+		addq.w	#bf_speed,d0	; increase table start
 		cmp.w	#bf_registers_table_length/2,d0 ; end of table ?
 		ble.s	blind_fader_in_skip1
 		move.w	#FALSE,bfi_active(a3)
 blind_fader_in_skip1
 		move.w	d0,bf_registers_table_start(a3)
-		MOVEF.W bf_registers_table_length,d3
-		MOVEF.W cl2_extension1_size,d4
-		moveq	#bf_step2,d5
+		MOVEF.W	bf_registers_table_length-1,d3
+		MOVEF.L cl2_extension1_size,d4
+		MOVEF.W	bf_step2,d5
 		lea	bf_registers_table(pc),a0
 		IFNE cl2_size1
 			move.l	cl2_construction1(a3),a1
@@ -1169,40 +1169,39 @@ blind_fader_in_skip1
 			move.l	cl2_construction2(a3),a2
 			ADDF.W	cl2_extension1_entry+cl2_ext1_BPL1DAT,a2
 		ENDC
-		move.l	cl2_display(a3),a4
-		ADDF.W	cl2_extension1_entry+cl2_ext1_BPL1DAT,a4
+		IFNE cl2_size3
+			move.l	cl2_display(a3),a4
+			ADDF.W	cl2_extension1_entry+cl2_ext1_BPL1DAT,a4
+		ENDC
 		moveq	#bf_lamellas_number-1,d7
 blind_fader_in_loop1
-		move.w	d2,d1		; start
+		move.w	d2,d1		; table start
 		moveq	#bf_lamella_height-1,d6
 blind_fader_in_loop2
-		move.w	(a0,d1.w*2),d0	; register address
+		move.w	(a0,d1.w*2),d0	; register offset
+		addq.w	#bf_step1,d1	; next entry
 		IFNE cl2_size1
-			move.w	d0,(a1)
+			move.w	d0,(a1)	; CMOVE 0,offset
 			add.l	d4,a1	; next line
 		ENDC
 		IFNE cl2_size2
 			move.w	d0,(a2)
-			add.l	d4,a2	; next line
+			add.l	d4,a2
 		ENDC
-		move.w	d0,(a4)
-		addq.w	#bf_step1,d1	; next entry
-		add.l	d4,a4		; next line
-		cmp.w	d3,d1		; end of table ?
-		blt.s	blind_fader_in_skip2
-		sub.w	d3,d1		; reset start
-blind_fader_in_skip2
+		IFNE cl2_size3
+			move.w	d0,(a4)
+			add.l	d4,a4
+		ENDC
+		and.w	d3,d1		; remove overflow
 		dbf	d6,blind_fader_in_loop2
-		add.w	d5,d2		; next entry
-		cmp.w	d3,d2		; end of table ?
-		blt.s	blind_fader_in_skip3
-		sub.w	d3,d2		; reset start
-blind_fader_in_skip3
+		add.w	d5,d2		; increase table start
+		and.w	d3,d2		; remove overflow
 		dbf	d7,blind_fader_in_loop1
 blind_fader_in_quit
 		move.l	(a7)+,a4
 		rts
-	
+
+
 		CNOP 0,4
 blind_fader_out
 		move.l	a4,-(a7)
@@ -1210,14 +1209,14 @@ blind_fader_out
 		bne.s	blind_fader_out_quit
 		move.w	bf_registers_table_start(a3),d2
 		move.w	d2,d0
-		subq.w	#bf_speed,d0	; next entry
+		subq.w	#bf_speed,d0		; decrease table start
 		bpl.s	blind_fader_out_skip1
 		move.w	#FALSE,bfo_active(a3)
 blind_fader_out_skip1
 		move.w	d0,bf_registers_table_start(a3)
-		MOVEF.W bf_registers_table_length,d3
-		MOVEF.W cl2_extension1_size,d4
-		moveq	#bf_step2,d5
+		MOVEF.W	bf_registers_table_length-1,d3
+		MOVEF.L cl2_extension1_size,d4
+		MOVEF.W	bf_step2,d5
 		lea	bf_registers_table(pc),a0
 		IFNE cl2_size1
 			move.l	cl2_construction1(a3),a1
@@ -1227,35 +1226,33 @@ blind_fader_out_skip1
 			move.l	cl2_construction2(a3),a2
 			ADDF.W	cl2_extension1_entry+cl2_ext1_BPL1DAT,a2
 		ENDC
-		move.l	cl2_display(a3),a4
-		ADDF.W	cl2_extension1_entry+cl2_ext1_BPL1DAT,a4
+		IFNE cl2_size3
+			move.l	cl2_display(a3),a4
+			ADDF.W	cl2_extension1_entry+cl2_ext1_BPL1DAT,a4
+		ENDC
 		moveq	#bf_lamellas_number-1,d7
 blind_fader_out_loop1
-		move.w	d2,d1		; start
+		move.w	d2,d1		; table start
 		moveq	#bf_lamella_height-1,d6
 blind_fader_out_loop2
-		move.w	(a0,d1.w*2),d0	; register address
+		move.w	(a0,d1.w*2),d0	; register offset
+		addq.w	#bf_step1,d1	; next entry
 		IFNE cl2_size1
-			move.w	d0,(a1)
+			move.w	d0,(a1)	; CMOVE 0,offset
 			add.l	d4,a1	; next line
 		ENDC
 		IFNE cl2_size2
 			move.w	d0,(a2)
-			add.l	d4,a2	; next line
+			add.l	d4,a2
 		ENDC
-		move.w	d0,(a4)
-		addq.w	#bf_step1,d1	; next entry
-		add.l	d4,a4		; next line
-		cmp.w	d3,d1		; end of table ?
-		blt.s	blind_fader_out_skip2
-		sub.w	d3,d1		; reset start
-blind_fader_out_skip2
+		IFNE cl2_size3
+			move.w	d0,(a4)
+			add.l	d4,a4
+		ENDC
+		and.w	d3,d1		; remove overflow
 		dbf	d6,blind_fader_out_loop2
-		add.w	d5,d2		; next entry
-		cmp.w	d3,d2		; end of table ?
-		blt.s	blind_fader_out_skip3
-		sub.w	d3,d2		; reset start
-blind_fader_out_skip3
+		add.w	d5,d2		; increase table start
+		and.w	d3,d2		; remove overflow
 		dbf	d7,blind_fader_out_loop1
 blind_fader_out_quit
 		move.l	(a7)+,a4
@@ -1287,10 +1284,10 @@ mh_exit_demo_skip
 
 	IFEQ pt_ciatiming_enabled
 		CNOP 0,4
-ciab_ta_server
+ciab_ta_interrupt_server
 	ELSE
 		CNOP 0,4
-VERTB_server
+vertb_interrupt_server
 	ENDC
 
 
@@ -1331,15 +1328,15 @@ pt_start_scrolltext
 	rts
 
 	CNOP 0,4
-ciab_tb_server
+ciab_tb_interrupt_server
 	PT_TIMER_INTERRUPT_SERVER
 
 	CNOP 0,4
-EXTER_server
+exter_interrupt_server
 	rts
 
 	CNOP 0,4
-nmi_server
+nmi_interrupt_server
 	rts
 
 
