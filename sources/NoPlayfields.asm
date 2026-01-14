@@ -1153,9 +1153,9 @@ blind_fader_in
 		move.w	d2,d0
 		addq.w	#bf_speed,d0	; increase table start
 		cmp.w	#bf_registers_table_length/2,d0 ; end of table ?
-		ble.s	blind_fader_in_skip1
+		ble.s	blind_fader_in_skip
 		move.w	#FALSE,bfi_active(a3)
-blind_fader_in_skip1
+blind_fader_in_skip
 		move.w	d0,bf_registers_table_start(a3)
 		MOVEF.W	bf_registers_table_length-1,d3
 		MOVEF.L cl2_extension1_size,d4
@@ -1212,8 +1212,11 @@ blind_fader_out
 		subq.w	#bf_speed,d0		; decrease table start
 		bpl.s	blind_fader_out_skip1
 		move.w	#FALSE,bfo_active(a3)
+		bra.s	blind_fader_out_skip2
+		CNOP 0,4
 blind_fader_out_skip1
 		move.w	d0,bf_registers_table_start(a3)
+blind_fader_out_skip2
 		MOVEF.W	bf_registers_table_length-1,d3
 		MOVEF.L cl2_extension1_size,d4
 		MOVEF.W	bf_step2,d5
