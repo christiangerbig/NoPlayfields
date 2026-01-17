@@ -1223,7 +1223,6 @@ blind_fader_out_skip1
 blind_fader_out_skip2
 		MOVEF.W	bf_registers_table_length-1,d3
 		MOVEF.L cl2_extension1_size,d4
-		MOVEF.W	bf_step2,d5
 		lea	bf_registers_table(pc),a0
 		IFNE cl2_size1
 			move.l	cl2_construction1(a3),a1
