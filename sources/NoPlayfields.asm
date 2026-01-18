@@ -80,6 +80,7 @@
 
 
 PROTRACKER_VERSION_3		SET 1
+START_SECOND_COPPERLIST		SET 1
 
 
 	INCLUDE "macros.i"
@@ -912,8 +913,6 @@ init_second_copperlist
 	bsr.s	cl2_init_copper_interrupt
 	COP_LISTEND
 	bsr	copy_second_copperlist
-	bsr	swap_second_copperlist
-	bsr	set_second_copperlist
 	rts
 
 
@@ -1173,10 +1172,8 @@ blind_fader_in_skip
 			move.l	cl2_construction2(a3),a2
 			ADDF.W	cl2_extension1_entry+cl2_ext1_BPL1DAT,a2
 		ENDC
-		IFNE cl2_size3
-			move.l	cl2_display(a3),a4
-			ADDF.W	cl2_extension1_entry+cl2_ext1_BPL1DAT,a4
-		ENDC
+		move.l	cl2_display(a3),a4
+		ADDF.W	cl2_extension1_entry+cl2_ext1_BPL1DAT,a4
 		moveq	#bf_lamellas_number-1,d7
 blind_fader_in_loop1
 		move.w	d2,d1		; table start
@@ -1192,11 +1189,9 @@ blind_fader_in_loop2
 			move.w	d0,(a2)
 			add.l	d4,a2
 		ENDC
-		IFNE cl2_size3
-			move.w	d0,(a4)
-			add.l	d4,a4
-		ENDC
+		move.w	d0,(a4)
 		and.w	d3,d1		; remove overflow
+		add.l	d4,a4
 		dbf	d6,blind_fader_in_loop2
 		addq.w	#bf_step2,d2	; increase table start
 		and.w	d3,d2		; remove overflow
@@ -1232,10 +1227,8 @@ blind_fader_out_skip2
 			move.l	cl2_construction2(a3),a2
 			ADDF.W	cl2_extension1_entry+cl2_ext1_BPL1DAT,a2
 		ENDC
-		IFNE cl2_size3
-			move.l	cl2_display(a3),a4
-			ADDF.W	cl2_extension1_entry+cl2_ext1_BPL1DAT,a4
-		ENDC
+		move.l	cl2_display(a3),a4
+		ADDF.W	cl2_extension1_entry+cl2_ext1_BPL1DAT,a4
 		moveq	#bf_lamellas_number-1,d7
 blind_fader_out_loop1
 		move.w	d2,d1		; table start
@@ -1251,11 +1244,9 @@ blind_fader_out_loop2
 			move.w	d0,(a2)
 			add.l	d4,a2
 		ENDC
-		IFNE cl2_size3
-			move.w	d0,(a4)
-			add.l	d4,a4
-		ENDC
+		move.w	d0,(a4)
 		and.w	d3,d1		; remove overflow
+		add.l	d4,a4
 		dbf	d6,blind_fader_out_loop2
 		addq.w	#bf_step2,d2	; increase table start
 		and.w	d3,d2		; remove overflow
