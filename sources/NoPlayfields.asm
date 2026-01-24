@@ -178,8 +178,8 @@ spr_x_size1			EQU 32
 spr_x_size2			EQU 32
 spr_depth			EQU 2
 spr_colors_number		EQU 0	; 4
-spr_odd_color_table_select	EQU 13	; logo
-spr_even_color_table_select	EQU 10	; scroll text
+spr_odd_color_table_select	EQU 13	; logo: COLOR208..COLOR223
+spr_even_color_table_select	EQU 10	; vertical scrolltext: COLOR160..COLO175
 spr_used_number			EQU 1
 spr_swap_number			EQU 1
 
@@ -1512,7 +1512,7 @@ pt_auddata			SECTION pt_audio,DATA_C
 
 ; Logo
 lg_image_data			SECTION lg_gfx,DATA
-	INCBIN "NoPlayfields:graphics/32x256x16-Resistance.rawblit"
+	INCBIN "NoPlayfields:graphics/32x256x16-Group-Logo.rawblit"
 
 ; Vert-Scrolltext
 vst_image_data			SECTION vst_gfx,DATA_C
