@@ -1260,20 +1260,19 @@ blind_fader_out_quit
 	CNOP 0,4
 mouse_handler
 	btst	#CIAB_GAMEPORT0,CIAPRA(a4) ; LMB pressed ?
-	beq.s	mh_exit_demo
-	rts
-	CNOP 0,4
-mh_exit_demo
+	bne.s	mouse_handler_quit
 	moveq	#FALSE,d1
 	move.w	d1,pt_effects_handler_active(a3)
+; Music-Fader
 	moveq	#TRUE,d0
 	move.w	d0,pt_music_fader_active(a3)
 ; Blind-Fader
 	tst.w	bfi_active(a3)		; fader still running ?
-	bne.s	mh_exit_demo_skip	; force fader stop
+	bne.s	mouse_handler_skip1	; force fader stop
 	move.w	d1,bfi_active(a3)
-mh_exit_demo_skip
+mouse_handler_skip1
 	move.w	d0,bfo_active(a3)
+mouse_handler_quit
 	rts
 
 
