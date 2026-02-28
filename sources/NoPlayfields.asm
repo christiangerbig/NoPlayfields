@@ -392,7 +392,7 @@ cl1_begin			RS.B 0
 
 cl1_COPJMP2			RS.L 1
 
-copperlist1_size		RS.B 0
+cl1_copperlist_size		RS.B 0
 
 
 	RSRESET
@@ -462,16 +462,16 @@ cl2_INTREQ			RS.L 1
 
 cl2_end				RS.L 1
 
-copperlist2_size		RS.B 0
+cl2_copperlist_size		RS.B 0
 
 
 cl1_size1			EQU 0
 cl1_size2			EQU 0
-cl1_size3			EQU copperlist1_size
+cl1_size3			EQU cl1_copperlist_size
 
 cl2_size1			EQU 0
-cl2_size2			EQU copperlist2_size
-cl2_size3			EQU copperlist2_size
+cl2_size2			EQU cl2_copperlist_size
+cl2_size3			EQU cl2_copperlist_size
 
 
 ; Sprite0 additional structure
@@ -887,10 +887,10 @@ cl1_init_copperlist
 		COP_MOVEQ 0,COPJMP2
 		bsr	cl1_set_sprite_pointers
 	ELSE
-		bsr.s	cl1_init_bitplane_pointers
+		bsr.s	cl1_init_plane_pointers
 		COP_MOVEQ 0,COPJMP2
 		bsr	cl1_set_sprite_pointers
-		bsr	cl1_set_bitplane_pointers
+		bsr	cl1_set_plane_pointers
 	ENDC
 	rts
 
@@ -915,7 +915,7 @@ cl2_init_copperlist
 	bsr.s	cl2_init_bplcon4_chunky
 	bsr.s	cl2_init_copper_interrupt
 	COP_LISTEND
-	bsr	copy_second_copperlist
+	bsr	cl2_copy_copperlist
 	rts
 
 
@@ -943,8 +943,8 @@ no_sync_routines
 	CNOP 0,4
 beam_routines
 	bsr	wait_copint
-	bsr.s	swap_second_copperlist
-	bsr.s	set_second_copperlist
+	bsr.s	cl2_swap_copperlist
+	bsr.s	cl2_set_copperlist
 	bsr.s	swap_sprite_structures
 	bsr.s	set_sprite_pointers
 	bsr	vert_scrolltext
@@ -1142,7 +1142,7 @@ vert_scrolltext_init
 	WAITBLIT
 	move.l	#(BC0F_SRCA|BC0F_DEST|ANBNC|ANBC|ABNC|ABC)<<16,BLTCON0-DMACONR(a6) ; minterm D = A
 	moveq	#-1,d0
-	move.l	d0,BLTAFWM-DMACONR(a6)
+	move.l	d0,BLTAFWM-DMACONR(a6)	; no mask
 	move.l	#((vst_image_plane_width-vst_text_char_width)<<16)|((vst_object_width-vst_text_char_width)+(spr_x_size2/8)),BLTAMOD-DMACONR(a6) ; A&D moduli
 	rts
 
@@ -1263,7 +1263,11 @@ blind_fader_out_quit
 	CNOP 0,4
 mouse_handler
 	btst	#CIAB_GAMEPORT0,CIAPRA(a4) ; LMB pressed ?
-	bne.s	mouse_handler_quit
+	beq.s	mouse_handler_skip1
+mouse_handler_quit
+	rts
+	CNOP 0,4
+mouse_handler_skip1
 	moveq	#FALSE,d1
 	move.w	d1,pt_effects_handler_active(a3)
 ; Music-Fader
@@ -1271,12 +1275,11 @@ mouse_handler
 	move.w	d0,pt_music_fader_active(a3)
 ; Blind-Fader
 	tst.w	bfi_active(a3)		; fader still running ?
-	bne.s	mouse_handler_skip1	; force fader stop
+	bne.s	mouse_handler_skip2	; force fader stop
 	move.w	d1,bfi_active(a3)
-mouse_handler_skip1
+mouse_handler_skip2
 	move.w	d0,bfo_active(a3)
-mouse_handler_quit
-	rts
+	bra.s	mouse_handler_quit
 
 
 	INCLUDE "int-autovectors-handlers.i"
@@ -1321,19 +1324,22 @@ pt_effects_handler_quit
 	CNOP 0,4
 pt_start_blind_fader_in
 	clr.w	bfi_active(a3)
-	rts
+	bra.s	pt_effects_handler_quit
 	CNOP 0,4
 pt_start_scrolltext
 	clr.w	vst_active(a3)
-	rts
+	bra.s	pt_effects_handler_quit
+
 
 	CNOP 0,4
 ciab_tb_interrupt_server
 	PT_TIMER_INTERRUPT_SERVER
 
+
 	CNOP 0,4
 exter_interrupt_server
 	rts
+
 
 	CNOP 0,4
 nmi_interrupt_server
