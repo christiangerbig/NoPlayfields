@@ -680,6 +680,7 @@ init_main
 	bsr	pt_InitAudTempStrucs
 	bsr	pt_ExamineSongStruc
 	bsr	pt_InitFtuPeriodTableStarts
+	bsr	init_CIA_timers
 	bsr	vm_init_audio_channels_info
 	bsr	vcs3111_init_bplam_table
 	bsr	vst_init_chars_offsets
@@ -687,7 +688,6 @@ init_main
 	bsr	vst_init_chars_images
 	bsr	init_colors
 	bsr	init_sprites
-	bsr	init_CIA_timers
 	bsr	cl1_init_copperlist
 	bsr	cl2_init_copperlist
 	rts
@@ -703,6 +703,14 @@ init_main
 	PT_EXAMINE_SONG_STRUCTURE
 
 	PT_INIT_FINETUNE_TABLE_STARTS
+
+
+	CNOP 0,4
+init_CIA_timers
+
+; PT-Replay
+	PT_INIT_TIMERS
+	rts
 
 
 ; Volume-Meter
@@ -832,14 +840,6 @@ vst_init_xy_coordinates
 	rts
 
 	COPY_SPRITE_STRUCTURES
-
-
-	CNOP 0,4
-init_CIA_timers
-
-; PT-Replay
-	PT_INIT_TIMERS
-	rts
 
 
 	CNOP 0,4
