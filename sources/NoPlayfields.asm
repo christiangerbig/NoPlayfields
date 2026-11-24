@@ -1061,7 +1061,7 @@ vert_scrolltext_loop
 	moveq	#0,d0
 	move.w	(a0),d0			; y
 	move.w	d0,d2
-	MULUF.L vst_object_width*vst_object_depth,d0,d1 ; y offset
+	MULUF.L vst_object_width*vst_object_depth,d0 ; y offset
 	add.l	d3,d0			; add sprite2 structure
 	WAITBLIT
 	move.l	(a1)+,(a2)		; character image
